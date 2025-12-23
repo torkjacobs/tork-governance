@@ -63,6 +63,7 @@ pytest tests/test_engine.py -v
 pytest tests/test_redactor.py -v
 pytest tests/test_engine_redactor_integration.py -v
 pytest tests/test_scanner.py -v
+pytest tests/test_policies.py -v
 ```
 
 ## CLI Usage
@@ -81,6 +82,16 @@ tork scan ./configs --output json
 tork scan ./configs --output sarif
 ```
 
+## Policy Templates
+
+Sample governance policies available in `templates/policies/`:
+- **pii-protection.yaml**: Detect and redact email, phone, SSN, credit cards
+- **api-security.yaml**: Block internal IPs, SQL injection, XSS attempts
+- **content-moderation.yaml**: Filter spam, excessive caps, offensive content
+- **compliance-hipaa.yaml**: HIPAA-compliant PII and medical data redaction
+
+See `templates/policies/README.md` for policy format documentation and examples.
+
 ## Test Coverage
 
 - **14** Governance Engine tests (initialization, decisions, operators, nesting)
@@ -88,9 +99,12 @@ tork scan ./configs --output sarif
 - **9** Integration tests (engine + redactor, auto-redaction, default engine)
 - **6** Package import tests
 - **37** MCP Scanner tests (all 10 rules, scanner class, output formats)
+- **11** Policy template tests (loading, validation, execution)
 
 ## Recent Changes
 
+- 2024-12-23: Sample policy templates with 11 comprehensive tests
+- 2024-12-23: Fixed test keys to use obviously fake patterns for secret scanner safety
 - 2024-12-23: MCP Security Scanner with 10 rules, CLI integration, text/json/sarif output
 - 2024-12-23: Full integration of PIIRedactor with GovernanceEngine
 - 2024-12-23: Fixed overlapping PII detection with priority filtering

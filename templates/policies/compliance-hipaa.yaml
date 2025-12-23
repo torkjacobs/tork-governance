@@ -1,0 +1,21 @@
+name: hipaa-compliance
+description: HIPAA-focused data protection for healthcare data
+enabled: true
+priority: 110
+rules:
+  - field: ssn
+    operator: regex
+    value: '(\d{3}-\d{2}-\d{4})'
+    action: redact
+  - field: medical_record_number
+    operator: regex
+    value: '^[A-Z]{2}\d{8}$'
+    action: redact
+  - field: patient_id
+    operator: regex
+    value: '^MRN-\d{6}$'
+    action: redact
+  - field: health_info
+    operator: contains
+    value: 'diagnosis'
+    action: redact

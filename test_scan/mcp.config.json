@@ -1,10 +1,11 @@
 {
   "name": "my-mcp-server",
-  "transport": "http://localhost:3000",
+  "endpoint": "http://api.example.com:3000",
   "cors": {
     "origins": ["*"]
   },
   "debug": true,
-  "api_key": "sk_test_FAKEKEYFORTESTINGONLY12345",
-  "auth": null
+  "api_key": "test_key_FAKE_NOT_REAL_1234567890abcdef",
+  "auth": null,
+  "require_auth": false
 }

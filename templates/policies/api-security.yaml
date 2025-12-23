@@ -1,0 +1,21 @@
+name: api-security
+description: Security policies for API requests to prevent common attacks
+enabled: true
+priority: 90
+rules:
+  - field: source_ip
+    operator: regex
+    value: '^(192\.168\.|10\.|172\.16\.)'
+    action: deny
+  - field: request_body
+    operator: regex
+    value: '(union.*select|select.*from|drop.*table|insert.*into|delete.*from)'
+    action: deny
+  - field: request_body
+    operator: contains
+    value: '<script'
+    action: deny
+  - field: request_body
+    operator: contains
+    value: 'javascript:'
+    action: deny

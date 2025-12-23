@@ -1,0 +1,33 @@
+name: pii-protection
+description: Block or redact common PII patterns in message content
+enabled: true
+priority: 100
+rules:
+  - field: message
+    operator: regex
+    value: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    action: redact
+  - field: content
+    operator: regex
+    value: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    action: redact
+  - field: body
+    operator: regex
+    value: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    action: redact
+  - field: text
+    operator: regex
+    value: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    action: redact
+  - field: message
+    operator: regex
+    value: '(\+?1[-.]?)?(\(?\d{3}\)?[-.]?)?\d{3}[-.]?\d{4}'
+    action: redact
+  - field: message
+    operator: regex
+    value: '\d{3}-\d{2}-\d{4}'
+    action: redact
+  - field: message
+    operator: regex
+    value: '(\d{4}[-\s]?){3}\d{4}'
+    action: redact

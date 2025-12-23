@@ -1,0 +1,17 @@
+name: content-moderation
+description: Basic content filtering for user-generated content
+enabled: true
+priority: 70
+rules:
+  - field: content
+    operator: regex
+    value: '([A-Z]{5,})'
+    action: deny
+  - field: content
+    operator: regex
+    value: '(viagra|cialis|casino|lottery|click.*now|limited.*time)'
+    action: deny
+  - field: content
+    operator: contains
+    value: '!!!'
+    action: deny
