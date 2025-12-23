@@ -21,6 +21,13 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Policy priority-based evaluation
 - Nested field support (dot notation)
 
+### Agent Identity & Authentication
+- JWT-based token issuance and verification
+- Agent registration with permissions
+- Token refresh and revocation
+- Support for custom metadata and organization context
+- Expiration validation
+
 ### PII Detection & Redaction
 - 6 PII types: EMAIL, PHONE, SSN, CREDIT_CARD, IP_ADDRESS, API_KEY
 - Regex patterns with Luhn validation for credit cards
@@ -100,9 +107,11 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **6** Package import tests
 - **37** MCP Scanner tests (all 10 rules, scanner class, output formats)
 - **11** Policy template tests (loading, validation, execution)
+- **13** JWT Identity tests (token issuance, verification, expiry, revocation, agent management)
 
 ## Recent Changes
 
+- 2024-12-23: JWT-based identity handler with token management and agent authentication
 - 2024-12-23: Sample policy templates with 11 comprehensive tests
 - 2024-12-23: Fixed test keys to use obviously fake patterns for secret scanner safety
 - 2024-12-23: MCP Security Scanner with 10 rules, CLI integration, text/json/sarif output

@@ -1,77 +1,150 @@
 """
-Identity Manager
-
-Handles identity lifecycle and verification for AI agents.
+Identity manager for AI agent authentication and authorization.
 """
 
+from datetime import datetime, timedelta, timezone
 from typing import Optional
-from pydantic import BaseModel
 import structlog
+
+from tork.identity.jwt_handler import JWTHandler, AgentClaims
+from tork.identity.exceptions import InvalidTokenError
 
 logger = structlog.get_logger(__name__)
 
 
-class AgentIdentity(BaseModel):
-    """Represents an AI agent's identity."""
-    
-    agent_id: str
-    name: str
-    capabilities: list[str] = []
-    trust_level: int = 0
-    metadata: dict = {}
-
-
 class IdentityManager:
-    """
-    Manages AI agent identities.
+    """Manages agent identities and authentication."""
     
-    Provides registration, verification, and lifecycle
-    management for agent identities.
-    """
-    
-    def __init__(self) -> None:
-        """Initialize the identity manager."""
-        self._identities: dict[str, AgentIdentity] = {}
+    def __init__(self, jwt_handler: JWTHandler) -> None:
+        """
+        Initialize identity manager.
+        
+        Args:
+            jwt_handler: JWTHandler instance for token operations
+        """
+        self.jwt_handler = jwt_handler
+        self._registered_agents: dict[str, AgentClaims] = {}
+        
         logger.info("IdentityManager initialized")
     
-    def register(self, identity: AgentIdentity) -> str:
+    def register_agent(
+        self,
+        agent_id: str,
+        permissions: list[str],
+        agent_name: Optional[str] = None,
+        organization_id: Optional[str] = None,
+        metadata: Optional[dict] = None,
+    ) -> str:
         """
-        Register a new agent identity.
+        Register a new agent and issue a token.
         
         Args:
-            identity: The agent identity to register.
+            agent_id: Unique agent identifier
+            permissions: List of permissions (e.g., ["read", "write", "execute"])
+            agent_name: Human-readable agent name
+            organization_id: Organization that owns the agent
+            metadata: Additional metadata
             
         Returns:
-            The registered agent ID.
+            JWT token for the agent
         """
-        self._identities[identity.agent_id] = identity
-        logger.info("Agent registered", agent_id=identity.agent_id)
-        return identity.agent_id
+        now = datetime.now(timezone.utc)
+        
+        claims = AgentClaims(
+            agent_id=agent_id,
+            agent_name=agent_name,
+            permissions=permissions,
+            organization_id=organization_id,
+            issued_at=now,
+            expires_at=now + timedelta(hours=self.jwt_handler.default_expiry_hours),
+            metadata=metadata,
+        )
+        
+        self._registered_agents[agent_id] = claims
+        token = self.jwt_handler.issue_token(claims)
+        
+        logger.info(
+            "Agent registered",
+            agent_id=agent_id,
+            permissions=permissions,
+            organization_id=organization_id,
+        )
+        
+        return token
     
-    def get(self, agent_id: str) -> Optional[AgentIdentity]:
+    def verify_agent(self, token: str) -> AgentClaims:
         """
-        Retrieve an agent identity.
+        Verify an agent token.
         
         Args:
-            agent_id: The agent ID to look up.
+            token: JWT token to verify
             
         Returns:
-            The agent identity, or None if not found.
+            Decoded AgentClaims for the agent
+            
+        Raises:
+            InvalidTokenError: If token is invalid or expired
         """
-        return self._identities.get(agent_id)
+        claims = self.jwt_handler.verify_token(token)
+        logger.info("Agent verified", agent_id=claims.agent_id)
+        return claims
     
-    def revoke(self, agent_id: str) -> bool:
+    def update_permissions(
+        self,
+        token: str,
+        permissions: list[str],
+    ) -> str:
         """
-        Revoke an agent identity.
+        Update agent permissions and issue a new token.
         
         Args:
-            agent_id: The agent ID to revoke.
+            token: Current agent token
+            permissions: Updated list of permissions
             
         Returns:
-            True if revoked, False if not found.
+            New JWT token with updated permissions
+            
+        Raises:
+            InvalidTokenError: If token is invalid
         """
-        if agent_id in self._identities:
-            del self._identities[agent_id]
-            logger.info("Agent revoked", agent_id=agent_id)
-            return True
-        return False
+        try:
+            claims = self.jwt_handler.verify_token(token)
+        except InvalidTokenError as e:
+            raise InvalidTokenError(f"Cannot update permissions: {str(e)}")
+        
+        # Revoke old token
+        self.jwt_handler.revoke_token(token)
+        
+        # Create new token with updated permissions
+        now = datetime.now(timezone.utc)
+        new_claims = AgentClaims(
+            agent_id=claims.agent_id,
+            agent_name=claims.agent_name,
+            permissions=permissions,
+            organization_id=claims.organization_id,
+            issued_at=now,
+            expires_at=now + timedelta(hours=self.jwt_handler.default_expiry_hours),
+            metadata=claims.metadata,
+        )
+        
+        new_token = self.jwt_handler.issue_token(new_claims)
+        
+        # Update registered agent
+        self._registered_agents[claims.agent_id] = new_claims
+        
+        logger.info(
+            "Agent permissions updated",
+            agent_id=claims.agent_id,
+            permissions=permissions,
+        )
+        
+        return new_token
+    
+    def list_registered_agents(self) -> list[str]:
+        """
+        List all registered agent IDs.
+        
+        Returns:
+            List of agent IDs
+        """
+        return list(self._registered_agents.keys())

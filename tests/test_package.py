@@ -33,10 +33,12 @@ def test_import_adapters():
 
 def test_import_identity():
     """Test that the identity module can be imported."""
-    from tork.identity import IdentityManager
+    from tork.identity import IdentityManager, JWTHandler
     
-    manager = IdentityManager()
+    handler = JWTHandler(secret_key="test-secret")
+    manager = IdentityManager(handler)
     assert manager is not None
+    assert manager.jwt_handler is not None
 
 
 def test_import_compliance():
