@@ -40,7 +40,7 @@ dev = [
 ]
 
 [project.scripts]
-tork = "cli.scanner:app"
+tork = "tork.cli.scanner:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
