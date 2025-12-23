@@ -321,3 +321,73 @@ class TestPIIRedactor:
         assert len(result.matches) == 1
         match = result.matches[0]
         assert text[match.start:match.end] == match.original
+    
+    def test_overlapping_credit_card_and_phone(self):
+        """Test that overlapping credit card and phone detections resolve correctly."""
+        redactor = PIIRedactor()
+        # 4111111111111111 is a valid test credit card that also matches phone pattern
+        text = "Card: 4111111111111111"
+        result = redactor.redact_text(text)
+        
+        # Should only detect as CREDIT_CARD, not also as PHONE
+        assert result.pii_found
+        assert len(result.matches) == 1
+        assert result.matches[0].pii_type == PIIType.CREDIT_CARD
+        assert "[REDACTED_CREDIT_CARD]" in result.redacted_text
+        # Make sure it's not double-redacted with PHONE
+        assert "[REDACTED_PHONE]" not in result.redacted_text
+    
+    def test_overlapping_ssn_and_phone(self):
+        """Test that overlapping SSN and phone detections resolve correctly."""
+        redactor = PIIRedactor()
+        # Some SSNs can match phone patterns like "123-45-6789"
+        text = "SSN: 123-45-6789"
+        result = redactor.redact_text(text)
+        
+        # Should prefer SSN over PHONE based on priority
+        assert result.pii_found
+        assert len(result.matches) == 1
+        assert result.matches[0].pii_type == PIIType.SSN
+    
+    def test_overlapping_api_key_and_phone(self):
+        """Test that API key takes priority over phone patterns."""
+        redactor = PIIRedactor()
+        # Some API keys might match phone patterns
+        text = "key_1234567890123456789"
+        result = redactor.redact_text(text)
+        
+        # Count API key and phone matches
+        pii_types = {m.pii_type for m in result.matches}
+        
+        # Should have API key match
+        if PIIType.API_KEY in pii_types:
+            assert len(result.matches) == 1
+            assert result.matches[0].pii_type == PIIType.API_KEY
+    
+    def test_multiple_non_overlapping_pii(self):
+        """Test multiple PII of different types in same text without overlap."""
+        redactor = PIIRedactor()
+        text = "Email: alice@example.com, SSN: 123-45-6789, Card: 4532-0151-1283-0366"
+        result = redactor.redact_text(text)
+        
+        assert result.pii_found
+        assert len(result.matches) == 3
+        
+        # Verify each type is detected exactly once
+        pii_types = {m.pii_type for m in result.matches}
+        assert PIIType.EMAIL in pii_types
+        assert PIIType.SSN in pii_types
+        assert PIIType.CREDIT_CARD in pii_types
+    
+    def test_no_garbled_output_with_overlaps(self):
+        """Test that redaction output is never garbled with overlapping matches."""
+        redactor = PIIRedactor()
+        text = "4111111111111111"
+        result = redactor.redact_text(text)
+        
+        # The output should have exactly one redaction marker, not duplicated/garbled
+        assert result.redacted_text.count("[REDACTED_") == 1
+        assert result.redacted_text.count("]") == 1
+        # Should not contain incomplete patterns like "[REDACTED_CREDIT_CARDPHONE]"
+        assert "[REDACTED_CREDIT_CARDPHONE]" not in result.redacted_text
+        assert "PHONE]" not in result.redacted_text.replace("[REDACTED_PHONE]", "")

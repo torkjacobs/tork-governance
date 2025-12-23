@@ -91,7 +91,6 @@ class PIIRedactor:
         
         matches: list[PIIMatch] = []
         redacted_text = text
-        offset = 0
         
         # Collect all matches
         all_matches = []
@@ -132,7 +131,10 @@ class PIIRedactor:
                 for start, end, match in self._detect_api_key(text)
             )
         
-        # Sort matches by position (reverse to avoid offset issues)
+        # Filter overlapping matches - keep only the best match
+        all_matches = self._filter_overlapping_matches(all_matches)
+        
+        # Sort matches by position (reverse to avoid offset issues when replacing)
         all_matches.sort(key=lambda x: x[1], reverse=True)
         
         # Apply redactions
@@ -304,3 +306,63 @@ class PIIRedactor:
         
         # Sum all digits and check if divisible by 10
         return sum(digits) % 10 == 0
+    
+    @staticmethod
+    def _filter_overlapping_matches(
+        matches: list[tuple[PIIType, int, int, str]]
+    ) -> list[tuple[PIIType, int, int, str]]:
+        """
+        Filter out overlapping matches, keeping only the best match.
+        
+        Priority order (higher = keep if overlap):
+        1. CREDIT_CARD (most specific)
+        2. SSN
+        3. API_KEY
+        4. PHONE
+        5. IP_ADDRESS
+        6. EMAIL (least specific)
+        
+        Args:
+            matches: List of (pii_type, start, end, original) tuples.
+            
+        Returns:
+            Filtered list with overlaps removed.
+        """
+        if not matches:
+            return matches
+        
+        # Priority map (higher number = higher priority)
+        priority_map = {
+            PIIType.CREDIT_CARD: 6,
+            PIIType.SSN: 5,
+            PIIType.API_KEY: 4,
+            PIIType.PHONE: 3,
+            PIIType.IP_ADDRESS: 2,
+            PIIType.EMAIL: 1,
+        }
+        
+        # Sort by start position, then by priority (descending)
+        sorted_matches = sorted(
+            matches,
+            key=lambda x: (x[1], -priority_map.get(x[0], 0))
+        )
+        
+        filtered: list[tuple[PIIType, int, int, str]] = []
+        
+        for pii_type, start, end, original in sorted_matches:
+            # Check if this match overlaps with any already filtered match
+            overlaps = False
+            for filtered_type, filtered_start, filtered_end, _ in filtered:
+                # Check if ranges overlap
+                if not (end <= filtered_start or start >= filtered_end):
+                    overlaps = True
+                    # Keep the one with higher priority
+                    if priority_map.get(pii_type, 0) > priority_map.get(filtered_type, 0):
+                        # Remove the lower priority match
+                        filtered.remove((filtered_type, filtered_start, filtered_end, _))
+                    break
+            
+            if not overlaps:
+                filtered.append((pii_type, start, end, original))
+        
+        return filtered
