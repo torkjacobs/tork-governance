@@ -17,6 +17,12 @@ from tork.core.policy import (
     PolicyOperator,
     PolicyLoader,
 )
+from tork.core.redactor import (
+    PIIType,
+    PIIMatch,
+    RedactionResult,
+    PIIRedactor,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -28,4 +34,8 @@ __all__ = [
     "PolicyAction",
     "PolicyOperator",
     "PolicyLoader",
+    "PIIType",
+    "PIIMatch",
+    "RedactionResult",
+    "PIIRedactor",
 ]

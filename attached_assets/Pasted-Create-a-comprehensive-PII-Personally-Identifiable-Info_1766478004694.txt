@@ -1,0 +1,51 @@
+Create a comprehensive PII (Personally Identifiable Information) redactor in src/tork/core/redactor.py
+
+REQUIREMENTS:
+
+1. Create PIIType enum with types:
+   - EMAIL, PHONE, SSN, CREDIT_CARD, IP_ADDRESS, API_KEY
+
+2. Create PIIMatch Pydantic model:
+   - pii_type: PIIType
+   - original: str
+   - redacted: str
+   - start: int
+   - end: int
+
+3. Create RedactionResult Pydantic model:
+   - original_text: str
+   - redacted_text: str
+   - matches: list[PIIMatch]
+   - pii_found: bool (computed from matches)
+
+4. Create PIIRedactor class:
+   - __init__(self, enabled_types: list[PIIType] = None) - defaults to all types
+   - redact_text(self, text: str) -> RedactionResult
+   - redact_dict(self, data: dict) -> tuple[dict, list[PIIMatch]] - recursively redact all string values
+   - _detect_email(self, text: str) -> list[tuple[int, int, str]]
+   - _detect_phone(self, text: str) -> list[tuple[int, int, str]]
+   - _detect_ssn(self, text: str) -> list[tuple[int, int, str]]
+   - _detect_credit_card(self, text: str) -> list[tuple[int, int, str]] - include Luhn validation
+   - _detect_ip_address(self, text: str) -> list[tuple[int, int, str]]
+   - _detect_api_key(self, text: str) -> list[tuple[int, int, str]] - common patterns like sk_, api_, key_
+
+5. Redaction format: [REDACTED_TYPE] e.g., [REDACTED_EMAIL], [REDACTED_SSN]
+
+6. Regex patterns should be comprehensive:
+   - Email: standard email pattern
+   - Phone: US formats (xxx-xxx-xxxx, (xxx) xxx-xxxx, +1xxxxxxxxxx)
+   - SSN: xxx-xx-xxxx pattern
+   - Credit card: 13-19 digits with optional spaces/dashes, validate with Luhn
+   - IP Address: IPv4 pattern
+   - API Key: strings starting with sk_, api_, key_, token_ followed by 20+ chars
+
+7. Update src/tork/core/__init__.py to export PIIRedactor, PIIType, PIIMatch, RedactionResult
+
+8. Create tests/test_redactor.py with tests for:
+   - Each PII type detection
+   - Multiple PII in same text
+   - Nested dict redaction
+   - Luhn validation for credit cards
+   - No false positives on clean text
+
+Run tests: python -m pytest tests/test_redactor.py -v
