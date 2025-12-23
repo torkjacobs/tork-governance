@@ -1,0 +1,32 @@
+name: default-governance-policy
+version: "1.0.0"
+description: Default governance policy for AI agents
+
+metadata:
+  author: Tork Team
+  created: "2024-01-01"
+  updated: "2024-01-01"
+
+rules:
+  - id: rule-001
+    name: action-logging
+    description: All agent actions must be logged
+    severity: high
+    message: Agent action was not properly logged
+
+  - id: rule-002
+    name: identity-verification
+    description: Agent identity must be verified before operations
+    severity: critical
+    message: Agent identity verification failed
+
+  - id: rule-003
+    name: rate-limiting
+    description: Agent operations must respect rate limits
+    severity: medium
+    message: Agent exceeded rate limit
+
+enforcement:
+  mode: advisory
+  fail_open: false
+  audit_all: true
