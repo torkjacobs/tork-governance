@@ -6,8 +6,11 @@ Provides Pydantic models for evaluation requests, results, and policy decisions.
 
 from enum import Enum
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 from pydantic import BaseModel, Field, ConfigDict
+
+if TYPE_CHECKING:
+    from tork.core.redactor import PIIMatch
 
 
 class PolicyDecision(str, Enum):
@@ -41,4 +44,5 @@ class EvaluationResult(BaseModel):
         default=None, description="Modified payload (if redacted)"
     )
     violations: list[str] = Field(default_factory=list, description="List of policy violations")
+    pii_matches: list[Any] = Field(default_factory=list, description="PII matches detected")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Evaluation timestamp")

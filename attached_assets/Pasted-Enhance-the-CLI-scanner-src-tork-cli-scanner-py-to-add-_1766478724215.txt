@@ -1,0 +1,42 @@
+Enhance the CLI scanner (src/tork/cli/scanner.py) to add a real MCP security scanning feature.
+
+REQUIREMENTS:
+
+1. Create src/tork/scanner/__init__.py and src/tork/scanner/rules.py with:
+   - ScanSeverity enum: CRITICAL, HIGH, MEDIUM, LOW, INFO
+   - ScanFinding Pydantic model: rule_id, severity, title, description, file_path, line_number (optional), recommendation
+   - ScanResult model: findings (list), files_scanned (int), scan_duration (float), summary (dict with counts by severity)
+   - SecurityRule base class with: id, severity, title, description, check(file_path, content) -> list[ScanFinding]
+
+2. Create src/tork/scanner/mcp_rules.py with 10 security rules:
+   - MCP001: Hardcoded secrets (API keys, tokens in config)
+   - MCP002: No authentication configured
+   - MCP003: Overly permissive CORS settings (allow all origins)
+   - MCP004: Debug mode enabled in production config
+   - MCP005: Insecure transport (http instead of https)
+   - MCP006: Missing rate limiting configuration
+   - MCP007: Verbose error messages exposed
+   - MCP008: No input validation schema defined
+   - MCP009: Privileged tool access without restrictions
+   - MCP010: Missing audit logging configuration
+
+3. Create src/tork/scanner/scanner.py with MCPScanner class:
+   - __init__(self, rules: list[SecurityRule] = None) - defaults to all MCP rules
+   - scan_file(self, file_path: str) -> list[ScanFinding]
+   - scan_directory(self, dir_path: str, patterns: list[str] = None) -> ScanResult
+   - Patterns default to: ["*.json", "*.yaml", "*.yml", "*.toml", "mcp.config.*"]
+
+4. Update src/tork/cli/scanner.py:
+   - Enhance the scan command to use MCPScanner
+   - Add options: --output (json/text/sarif), --severity (filter by min severity)
+   - Show rich formatted output with colors by severity
+   - Exit code 1 if CRITICAL or HIGH findings, 0 otherwise
+
+5. Update pyproject.toml if needed for new package
+
+6. Add tests/test_scanner.py with:
+   - Test each rule detects its vulnerability
+   - Test scan_directory
+   - Test output formats
+
+Run tests: python -m pytest tests/test_scanner.py -v

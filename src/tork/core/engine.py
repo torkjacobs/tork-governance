@@ -8,6 +8,7 @@ from typing import Any, Optional
 from datetime import datetime
 import re
 import structlog
+import copy
 
 from tork.core.models import EvaluationRequest, EvaluationResult, PolicyDecision
 from tork.core.policy import Policy, PolicyRule, PolicyAction
@@ -23,21 +24,35 @@ class GovernanceEngine:
     and compliance checking across agent operations.
     """
     
-    def __init__(self, policies: Optional[list[Policy]] = None) -> None:
+    def __init__(
+        self,
+        policies: Optional[list[Policy]] = None,
+        pii_redactor: Optional[Any] = None,
+        enable_auto_redaction: bool = True,
+    ) -> None:
         """
         Initialize the governance engine.
         
         Args:
             policies: Optional list of Policy objects to load.
+            pii_redactor: Optional PIIRedactor instance for PII detection and redaction.
+            enable_auto_redaction: Whether to auto-redact PII even without explicit REDACT rules.
         """
         self._policies: dict[str, Policy] = {}
         self._initialized = False
+        self.pii_redactor = pii_redactor
+        self.enable_auto_redaction = enable_auto_redaction
         
         if policies:
             for policy in policies:
                 self.add_policy(policy)
         
-        logger.info("GovernanceEngine initialized", policy_count=len(self._policies))
+        logger.info(
+            "GovernanceEngine initialized",
+            policy_count=len(self._policies),
+            pii_redactor_enabled=pii_redactor is not None,
+            auto_redaction_enabled=enable_auto_redaction,
+        )
     
     def start(self) -> None:
         """Start the governance engine."""
@@ -90,6 +105,7 @@ class GovernanceEngine:
             The evaluation result with decision and violations.
         """
         violations: list[str] = []
+        pii_matches: list[Any] = []
         modified_payload = request.payload.copy()
         final_decision = PolicyDecision.ALLOW
         reason = "No policy violations"
@@ -126,12 +142,23 @@ class GovernanceEngine:
                             f"Policy '{policy.name}' redacted field: {rule.field}"
                         )
         
+        # Auto-redact PII if enabled
+        if self.pii_redactor and self.enable_auto_redaction:
+            redacted_payload, pii_matches = self.pii_redactor.redact_dict(modified_payload)
+            if pii_matches:
+                modified_payload = redacted_payload
+                if final_decision == PolicyDecision.ALLOW:
+                    final_decision = PolicyDecision.REDACT
+                    reason = f"PII auto-redaction enabled - {len(pii_matches)} PII items detected"
+                violations.extend([f"Auto-redacted PII: {m.pii_type.value}" for m in pii_matches])
+        
         logger.info(
             "Request evaluated",
             agent_id=request.agent_id,
             action=request.action,
             decision=final_decision,
             violations=len(violations),
+            pii_matches=len(pii_matches),
         )
         
         return EvaluationResult(
@@ -140,8 +167,31 @@ class GovernanceEngine:
             original_payload=request.payload,
             modified_payload=modified_payload if final_decision == PolicyDecision.REDACT else None,
             violations=violations,
+            pii_matches=pii_matches,
             timestamp=datetime.utcnow(),
         )
+    
+    def evaluate_with_redaction(self, request: EvaluationRequest) -> EvaluationResult:
+        """
+        Evaluate a request and always redact PII from the modified payload.
+        
+        This is a convenience method that forces auto-redaction regardless of settings.
+        
+        Args:
+            request: The evaluation request.
+            
+        Returns:
+            The evaluation result with PII redacted from modified_payload.
+        """
+        # Temporarily enable auto-redaction
+        original_auto_redaction = self.enable_auto_redaction
+        self.enable_auto_redaction = True
+        
+        try:
+            return self.evaluate(request)
+        finally:
+            # Restore original setting
+            self.enable_auto_redaction = original_auto_redaction
     
     def _check_rule(self, rule: PolicyRule, payload: dict[str, Any]) -> bool:
         """
