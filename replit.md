@@ -28,6 +28,13 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Support for custom metadata and organization context
 - Expiration validation
 
+### Compliance Receipts & Audit Trails
+- PolicyReceipt model with HMAC-SHA256 tamper detection
+- ReceiptGenerator for creating audit receipts from evaluations
+- Payload hashing (SHA256) for original and modified payloads
+- ReceiptStore (ABC) with MemoryReceiptStore and FileReceiptStore implementations
+- Query by agent ID and date range
+
 ### PII Detection & Redaction
 - 6 PII types: EMAIL, PHONE, SSN, CREDIT_CARD, IP_ADDRESS, API_KEY
 - Regex patterns with Luhn validation for credit cards
@@ -108,9 +115,11 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **37** MCP Scanner tests (all 10 rules, scanner class, output formats)
 - **11** Policy template tests (loading, validation, execution)
 - **13** JWT Identity tests (token issuance, verification, expiry, revocation, agent management)
+- **19** Compliance Receipt tests (generation, signature verification, memory/file storage, queries)
 
 ## Recent Changes
 
+- 2024-12-23: Compliance receipts system with audit trails, tamper detection, and storage backends
 - 2024-12-23: JWT-based identity handler with token management and agent authentication
 - 2024-12-23: Sample policy templates with 11 comprehensive tests
 - 2024-12-23: Fixed test keys to use obviously fake patterns for secret scanner safety
