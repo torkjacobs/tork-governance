@@ -1,0 +1,47 @@
+Create LangChain middleware integration in src/tork/adapters/langchain/
+
+REQUIREMENTS:
+
+1. Create src/tork/adapters/langchain/middleware.py with:
+
+   TorkCallbackHandler(BaseCallbackHandler):
+   - Integrates with LangChain's callback system
+   - __init__(self, engine: GovernanceEngine, identity_manager: IdentityManager = None, receipt_generator: ReceiptGenerator = None)
+   - on_llm_start(self, serialized, prompts, **kwargs) -> None
+   - on_llm_end(self, response, **kwargs) -> None  
+   - on_chain_start(self, serialized, inputs, **kwargs) -> None
+   - on_chain_end(self, outputs, **kwargs) -> None
+   - on_tool_start(self, serialized, input_str, **kwargs) -> None
+   - on_tool_end(self, output, **kwargs) -> None
+   - For each event: evaluate with engine, generate receipt if configured, raise GovernanceViolation if DENY
+
+2. Create src/tork/adapters/langchain/exceptions.py:
+   - GovernanceViolation(Exception): message, decision, violations
+
+3. Create src/tork/adapters/langchain/chain.py with:
+   
+   GovernedChain class:
+   - __init__(self, chain: Any, engine: GovernanceEngine, **kwargs)
+   - invoke(self, input, config=None, **kwargs) -> wraps chain.invoke with governance
+   - Evaluates input before chain execution
+   - Evaluates output after chain execution
+   - Returns modified output if redaction occurred
+
+4. Create convenience function:
+   - create_governed_chain(chain, engine, identity_manager=None, receipt_generator=None) -> GovernedChain
+
+5. Update src/tork/adapters/langchain/__init__.py to export all
+
+6. Update src/tork/adapters/__init__.py to include langchain exports
+
+7. Create tests/test_langchain.py:
+   - Test callback handler initialization
+   - Test governance violation on DENY
+   - Test REDACT modifies output
+   - Test ALLOW passes through
+   - Test with receipt generation
+   - Mock LangChain components (don't require actual LangChain install for tests)
+
+Note: Use try/except for LangChain imports so Tork works without LangChain installed.
+
+Run: python -m pytest tests/test_langchain.py -v
