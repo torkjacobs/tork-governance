@@ -7,7 +7,7 @@ A universal governance SDK for AI agents.
 This project provides a comprehensive governance framework for AI agent systems:
 - **Governance Engine**: Policy evaluation with ALLOW/DENY/REDACT decisions
 - **PII Redactor**: Detects and redacts sensitive data (email, phone, SSN, credit cards, IPs, API keys)
-- **Adapters**: Integration with various AI frameworks
+- **Adapters**: Integration with AI frameworks (LangChain middleware included)
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -116,9 +116,11 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **11** Policy template tests (loading, validation, execution)
 - **13** JWT Identity tests (token issuance, verification, expiry, revocation, agent management)
 - **19** Compliance Receipt tests (generation, signature verification, memory/file storage, queries)
+- **20** LangChain adapter tests (callback handler, governed chain, violations, redaction)
 
 ## Recent Changes
 
+- 2024-12-25: LangChain middleware integration with callback handler and governed chain wrapper
 - 2024-12-23: Compliance receipts system with audit trails, tamper detection, and storage backends
 - 2024-12-23: JWT-based identity handler with token management and agent authentication
 - 2024-12-23: Sample policy templates with 11 comprehensive tests

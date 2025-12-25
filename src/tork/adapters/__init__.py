@@ -6,5 +6,17 @@ and external systems.
 """
 
 from tork.adapters.base import BaseAdapter
+from tork.adapters.langchain import (
+    GovernanceViolation,
+    TorkCallbackHandler,
+    GovernedChain,
+    create_governed_chain,
+)
 
-__all__ = ["BaseAdapter"]
+__all__ = [
+    "BaseAdapter",
+    "GovernanceViolation",
+    "TorkCallbackHandler",
+    "GovernedChain",
+    "create_governed_chain",
+]
