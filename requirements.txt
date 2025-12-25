@@ -18,3 +18,4 @@ pytest
 PyJWT
 httpx
 pytest-asyncio
+build

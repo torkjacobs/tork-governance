@@ -10,8 +10,9 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
 authors = [
-    {name = "Tork Team"}
+    {name = "Tork Team", email = "team@tork.network"}
 ]
+keywords = ["ai", "governance", "security", "mcp", "langchain", "pii", "compliance", "audit"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -20,6 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
 dependencies = [
     "fastapi>=0.100.0",
@@ -30,13 +34,25 @@ dependencies = [
     "typer>=0.9.0",
     "rich>=13.0.0",
     "uvicorn>=0.23.0",
+    "PyJWT>=2.0.0",
+    "httpx>=0.24.0",
 ]
+
+[project.urls]
+Homepage = "https://tork.network"
+Documentation = "https://github.com/torkjacobs/tork-governance#readme"
+Repository = "https://github.com/torkjacobs/tork-governance"
+Issues = "https://github.com/torkjacobs/tork-governance/issues"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
     "black>=23.0.0",
     "mypy>=1.0.0",
+]
+langchain = [
+    "langchain>=0.1.0",
 ]
 
 [project.scripts]
@@ -47,6 +63,9 @@ where = ["src"]
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[tool.setuptools.package-data]
+tork = ["py.typed"]
 
 [tool.black]
 line-length = 88
@@ -62,3 +81,4 @@ ignore_missing_imports = true
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+asyncio_mode = "auto"
