@@ -117,9 +117,11 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **13** JWT Identity tests (token issuance, verification, expiry, revocation, agent management)
 - **19** Compliance Receipt tests (generation, signature verification, memory/file storage, queries)
 - **20** LangChain adapter tests (callback handler, governed chain, violations, redaction)
+- **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 
 ## Recent Changes
 
+- 2024-12-25: HTTP proxy adapter with GovernedProxy and FastAPI server
 - 2024-12-25: LangChain middleware integration with callback handler and governed chain wrapper
 - 2024-12-23: Compliance receipts system with audit trails, tamper detection, and storage backends
 - 2024-12-23: JWT-based identity handler with token management and agent authentication
