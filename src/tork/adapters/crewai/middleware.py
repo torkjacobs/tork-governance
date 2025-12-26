@@ -1,6 +1,9 @@
-import json
-import time
-from typing import Any, Dict, Optional, List
+from __future__ import annotations
+from typing import Any, Dict, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tork.adapters.crewai.governed import GovernedAgent, GovernedCrew
+
 from tork.core.engine import GovernanceEngine
 from tork.core.models import EvaluationRequest
 from tork.core.redactor import PIIRedactor

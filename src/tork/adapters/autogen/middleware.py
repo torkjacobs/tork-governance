@@ -1,4 +1,9 @@
-from typing import Any, Dict, Optional, List
+from __future__ import annotations
+from typing import Any, Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tork.adapters.autogen.governed import GovernedAutoGenAgent, GovernedGroupChat
+
 from tork.core.engine import GovernanceEngine
 from tork.core.models import EvaluationRequest, PolicyDecision
 from tork.compliance.receipts import ReceiptGenerator

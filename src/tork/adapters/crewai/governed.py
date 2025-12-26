@@ -1,4 +1,4 @@
-from typing import Any, Optional, List, Dict, TYPE_CHECKING
+from typing import Any, Optional, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from tork.adapters.crewai.middleware import TorkCrewAIMiddleware
