@@ -10,6 +10,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **Adapters**: Integration with AI frameworks (LangChain, CrewAI, AutoGen, OpenAI Agents)
 - **Workflows**: Agent chaining and workflow orchestration with governance
 - **Consensus**: Multi-agent debate and consensus building system
+- **ACL**: Agent Communication Language message schema with FIPA protocols
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -73,6 +74,16 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Cost limit enforcement and stop-on-consensus support
 - Governance applied to all responses with compliance receipts
 
+### ACL Message Schema System
+- Performative enum with 12 standard speech acts (REQUEST, INFORM, PROPOSE, etc.)
+- ACLMessage model with sender, receiver, content, protocol, ontology, and metadata
+- Conversation model for tracking message threads between agents
+- FIPA protocols: Request, Contract Net, Query with state transitions
+- ACLRouter for message routing with governance and protocol validation
+- MessageBuilder fluent API for creating messages
+- Broadcast support for multi-agent communication
+- Compliance receipts for all messages
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -96,6 +107,7 @@ tork-governance/
 │   ├── adapters/       # Framework integrations (LangChain, CrewAI, AutoGen, OpenAI Agents)
 │   ├── workflows/      # Agent chaining and workflow orchestration
 │   ├── consensus/      # Multi-agent debate and consensus building
+│   ├── acl/            # Agent Communication Language message schema
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
@@ -162,11 +174,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **23** OpenAI Agents SDK adapter tests (middleware, governed agent/runner, tool validation, receipts)
 - **27** Workflow tests (models, engine, builder, templates, pause/resume, async)
 - **26** Consensus tests (debate models, engine, strategies, templates, cost limits)
+- **33** ACL tests (performatives, messages, protocols, router, builder, governance)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-26: ACL message schema system with FIPA protocols, router, and governance
 - 2025-12-26: Debate/Consensus system with DebateEngine, strategies, and templates
 - 2025-12-26: Agent Chaining/Workflow system with WorkflowEngine, WorkflowBuilder, and templates
 - 2025-12-26: OpenAI Agents SDK integration adapter with middleware, governed wrappers, tool validation

@@ -25,6 +25,13 @@ from tork.consensus import (
     DebateResult,
     DebateEngine,
 )
+from tork.acl import (
+    Performative,
+    ACLMessage,
+    Conversation,
+    ACLRouter,
+    MessageBuilder,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -40,5 +47,10 @@ __all__ = [
     "ConsensusConfig",
     "DebateResult",
     "DebateEngine",
+    "Performative",
+    "ACLMessage",
+    "Conversation",
+    "ACLRouter",
+    "MessageBuilder",
     "__version__",
 ]
