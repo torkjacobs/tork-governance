@@ -5,7 +5,7 @@ A universal governance SDK for AI agents providing identity management,
 compliance validation, and policy enforcement capabilities.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Tork Team"
 
 from tork.core import GovernanceEngine
