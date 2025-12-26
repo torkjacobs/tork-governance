@@ -1,7 +1,10 @@
 """Middleware for integrating Tork governance with OpenAI Agents SDK."""
 
-from typing import Any, Dict, List, Optional
-import re
+from __future__ import annotations
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tork.adapters.openai_agents.governed import GovernedOpenAIAgent, GovernedRunner
 
 from tork.core.engine import GovernanceEngine
 from tork.core.models import EvaluationRequest, PolicyDecision

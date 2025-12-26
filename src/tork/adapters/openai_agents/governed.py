@@ -1,6 +1,6 @@
 """Governed wrappers for OpenAI Agents SDK."""
 
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, TYPE_CHECKING
 import asyncio
 
 if TYPE_CHECKING:
