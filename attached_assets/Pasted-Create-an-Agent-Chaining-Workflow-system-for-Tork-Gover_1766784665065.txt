@@ -1,0 +1,153 @@
+Create an Agent Chaining/Workflow system for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/workflows/__init__.py with exports
+
+2. Create src/tork/workflows/models.py:
+   
+   class WorkflowStep(BaseModel):
+       """A single step in a workflow."""
+       id: str
+       name: str
+       agent_type: str  # "langchain", "crewai", "autogen", "openai_agents", "custom"
+       config: Dict[str, Any] = {}
+       input_mapping: Dict[str, str] = {}  # Map previous step outputs to this step's inputs
+       timeout_seconds: int = 300
+       retry_count: int = 3
+       on_failure: str = "stop"  # "stop", "skip", "retry", "fallback"
+       fallback_step_id: Optional[str] = None
+   
+   class WorkflowDefinition(BaseModel):
+       """Definition of a complete workflow."""
+       id: str
+       name: str
+       description: str = ""
+       steps: List[WorkflowStep]
+       governance_policy: Optional[str] = None  # Policy to apply at each step
+       require_human_approval: List[str] = []  # Step IDs requiring approval
+       max_total_cost: Optional[float] = None
+       metadata: Dict[str, Any] = {}
+   
+   class StepResult(BaseModel):
+       """Result of executing a single step."""
+       step_id: str
+       status: str  # "success", "failed", "skipped", "pending_approval"
+       output: Any = None
+       error: Optional[str] = None
+       execution_time_ms: int = 0
+       tokens_used: int = 0
+       cost: float = 0.0
+       receipt_id: Optional[str] = None
+   
+   class WorkflowResult(BaseModel):
+       """Result of executing a complete workflow."""
+       workflow_id: str
+       status: str  # "completed", "failed", "paused", "cancelled"
+       step_results: List[StepResult]
+       total_execution_time_ms: int = 0
+       total_tokens_used: int = 0
+       total_cost: float = 0.0
+       final_output: Any = None
+
+3. Create src/tork/workflows/engine.py:
+   
+   class WorkflowEngine:
+       """Execute governed workflows with chaining support."""
+       
+       def __init__(self, governance_engine: GovernanceEngine = None):
+           - Initialize with optional governance engine
+           - Create default engine if not provided
+           - Store step executors registry
+       
+       def register_executor(self, agent_type: str, executor: Callable):
+           """Register a step executor for an agent type."""
+       
+       def execute(self, workflow: WorkflowDefinition, initial_input: Dict[str, Any]) -> WorkflowResult:
+           """Execute a workflow synchronously."""
+           - Iterate through steps in order
+           - Apply governance at each step (before and after)
+           - Handle input mapping between steps
+           - Track costs and tokens
+           - Generate compliance receipts
+           - Handle failures according to on_failure strategy
+           - Check human approval requirements
+           - Enforce max_total_cost limit
+       
+       async def execute_async(self, workflow: WorkflowDefinition, initial_input: Dict[str, Any]) -> WorkflowResult:
+           """Execute a workflow asynchronously."""
+       
+       def _execute_step(self, step: WorkflowStep, inputs: Dict[str, Any], context: Dict) -> StepResult:
+           """Execute a single step with governance."""
+       
+       def _map_inputs(self, step: WorkflowStep, previous_results: Dict[str, StepResult], initial_input: Dict) -> Dict:
+           """Map outputs from previous steps to current step inputs."""
+       
+       def pause(self, workflow_id: str):
+           """Pause a running workflow."""
+       
+       def resume(self, workflow_id: str, approval: bool = True):
+           """Resume a paused workflow after human approval."""
+
+4. Create src/tork/workflows/builder.py:
+   
+   class WorkflowBuilder:
+       """Fluent builder for creating workflows."""
+       
+       def __init__(self, workflow_id: str, name: str):
+           self._workflow = WorkflowDefinition(id=workflow_id, name=name, steps=[])
+       
+       def add_step(self, step_id: str, name: str, agent_type: str, **kwargs) -> "WorkflowBuilder":
+           """Add a step to the workflow."""
+       
+       def with_input_mapping(self, step_id: str, mappings: Dict[str, str]) -> "WorkflowBuilder":
+           """Set input mappings for a step."""
+       
+       def require_approval(self, step_id: str) -> "WorkflowBuilder":
+           """Mark a step as requiring human approval."""
+       
+       def with_governance_policy(self, policy: str) -> "WorkflowBuilder":
+           """Set the governance policy for the workflow."""
+       
+       def with_max_cost(self, max_cost: float) -> "WorkflowBuilder":
+           """Set maximum total cost for the workflow."""
+       
+       def build(self) -> WorkflowDefinition:
+           """Build and return the workflow definition."""
+
+5. Create src/tork/workflows/templates.py:
+   
+   Pre-built workflow templates:
+   
+   def research_critique_rewrite() -> WorkflowDefinition:
+       """Research → Critique → Rewrite workflow template."""
+   
+   def multi_agent_consensus() -> WorkflowDefinition:
+       """Get responses from multiple agents, then synthesize."""
+   
+   def review_and_approve() -> WorkflowDefinition:
+       """Draft → Review → Human Approval → Finalize."""
+
+6. Create tests/test_workflows.py with 20+ tests:
+   - Test WorkflowStep model
+   - Test WorkflowDefinition model
+   - Test StepResult model
+   - Test WorkflowResult model
+   - Test WorkflowEngine initialization
+   - Test register_executor
+   - Test execute simple workflow (2 steps)
+   - Test execute with input mapping
+   - Test execute with governance applied
+   - Test execute with step failure (stop)
+   - Test execute with step failure (skip)
+   - Test execute with step failure (retry)
+   - Test execute with max_cost limit exceeded
+   - Test WorkflowBuilder fluent API
+   - Test workflow templates
+   - Test pause and resume
+   - Test compliance receipt generation per step
+   - Test async execution
+
+7. Update src/tork/__init__.py to export workflow classes
+
+Run: python -m pytest tests/test_workflows.py -v
