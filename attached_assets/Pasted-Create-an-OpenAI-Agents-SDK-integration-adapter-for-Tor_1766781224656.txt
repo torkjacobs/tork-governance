@@ -1,0 +1,98 @@
+Create an OpenAI Agents SDK integration adapter for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/adapters/openai_agents/__init__.py with exports
+
+2. Create src/tork/adapters/openai_agents/middleware.py:
+   
+   class TorkOpenAIAgentsMiddleware:
+       """Middleware to integrate Tork governance with OpenAI Agents SDK."""
+       
+       def __init__(self, engine: GovernanceEngine = None, agent_id: str = None):
+           - Initialize with optional governance engine
+           - If no engine provided, create default with PII redaction enabled
+           - Store agent_id for tracking
+       
+       def wrap_agent(self, agent) -> "GovernedOpenAIAgent":
+           """Wrap an OpenAI Agent with governance controls."""
+           - Return a GovernedOpenAIAgent that intercepts agent runs
+       
+       def process_input(self, input_text: str, context: dict = None) -> dict:
+           """Process input through governance before sending to agent."""
+           - Evaluate input against policies
+           - Redact PII if needed
+           - Return processed input or raise GovernanceError
+       
+       def process_output(self, output: str, tool_calls: list = None) -> dict:
+           """Process agent output through governance."""
+           - Evaluate output against policies
+           - Redact sensitive data from results
+           - Check tool calls for security issues
+           - Generate compliance receipt
+           - Return processed output
+       
+       def check_tool_call(self, tool_name: str, tool_args: dict) -> dict:
+           """Validate tool calls against security policies."""
+           - Check for dangerous tool patterns
+           - Validate arguments don't contain blocked content
+           - Return validation result
+
+3. Create src/tork/adapters/openai_agents/governed.py:
+   
+   class GovernedOpenAIAgent:
+       """An OpenAI Agent wrapped with Tork governance."""
+       
+       def __init__(self, agent, middleware: TorkOpenAIAgentsMiddleware):
+           self._agent = agent
+           self._middleware = middleware
+       
+       def run(self, input_text: str, **kwargs):
+           """Run agent with governance checks."""
+           - Process input through middleware
+           - Run original agent
+           - Process output through middleware
+           - Return governed result
+       
+       async def run_async(self, input_text: str, **kwargs):
+           """Async version of run with governance."""
+           - Same as run but async
+       
+       def __getattr__(self, name):
+           """Proxy all other attributes to wrapped agent."""
+           return getattr(self._agent, name)
+   
+   class GovernedRunner:
+       """A governed wrapper for OpenAI Agent Runner."""
+       
+       def __init__(self, middleware: TorkOpenAIAgentsMiddleware):
+           self._middleware = middleware
+       
+       def run(self, agent, input_text: str, **kwargs):
+           """Run any agent with governance applied."""
+
+4. Create src/tork/adapters/openai_agents/exceptions.py:
+   - OpenAIAgentGovernanceError(Exception): Base exception
+   - InputBlockedError(Exception): When input is blocked by policy
+   - OutputBlockedError(Exception): When output is blocked
+   - ToolCallBlockedError(Exception): When a tool call is blocked
+
+5. Create tests/test_openai_agents.py with 12+ tests:
+   - Test middleware initialization
+   - Test wrap_agent
+   - Test process_input with clean content
+   - Test process_input with PII (redaction)
+   - Test process_input with blocked content
+   - Test process_output
+   - Test check_tool_call with safe tool
+   - Test check_tool_call with dangerous tool (shell, exec, etc.)
+   - Test GovernedOpenAIAgent run method
+   - Test GovernedOpenAIAgent proxies attributes
+   - Test compliance receipt generation
+   - Mock OpenAI Agent classes for testing (don't require openai-agents package)
+
+6. Update src/tork/adapters/__init__.py to export OpenAI Agents adapter
+
+Note: Don't require openai-agents as a dependency - make it optional. Check if installed and provide helpful error if not.
+
+Run: python -m pytest tests/test_openai_agents.py -v
