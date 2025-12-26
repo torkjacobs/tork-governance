@@ -38,6 +38,7 @@ print(result.modified_payload["msg"]) # "Contact me at [REDACTED_EMAIL]"
 - **MCP Security Scanner**: Built-in scanner with 10 rules to detect hardcoded secrets, permissive CORS, and insecure configs.
 - **Compliance Receipts**: HMAC-signed audit trails with tamper detection for every governed action.
 - **Interactive Playground**: Built-in Policy Playground UI for testing policies and redaction in real-time.
+- **5 Framework Integrations**: Native support for LangChain, CrewAI, AutoGen, OpenAI Agents, and HTTP Proxy.
 
 ## 🔌 Framework Integrations
 
@@ -57,6 +58,12 @@ governed_agent = TorkCrewAIMiddleware().wrap_agent(base_agent)
 ```python
 from tork.adapters.autogen import TorkAutoGenMiddleware
 governed_agent = TorkAutoGenMiddleware().wrap_agent(base_agent)
+```
+
+### OpenAI Agents SDK
+```python
+from tork.adapters.openai_agents import TorkOpenAIAgentsMiddleware
+governed_agent = TorkOpenAIAgentsMiddleware().wrap_agent(base_agent)
 ```
 
 ### HTTP Proxy

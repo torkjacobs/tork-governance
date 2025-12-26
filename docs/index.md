@@ -14,6 +14,7 @@ Tork Governance provides a comprehensive framework for managing AI agent behavio
 - **Agent Identity**: JWT-based identity management and authentication.
 - **Compliance Receipts**: Tamper-evident audit trails with HMAC signatures.
 - **Interactive Playground**: Web-based UI for testing policies and scanning.
+- **Framework Integrations**: Native support for LangChain, CrewAI, AutoGen, and OpenAI Agents SDK.
 
 ## Quick Installation
 
@@ -25,5 +26,5 @@ pip install tork-governance
 
 - [Quickstart](quickstart.md): Get up and running in minutes.
 - [API Reference](api-reference.md): Detailed class and method documentation.
-- [Integrations](integrations.md): Guides for LangChain, FastAPI, and more.
+- [Integrations](integrations.md): Guides for LangChain, OpenAI Agents, and more.
 - [Examples](examples.md): Practical code samples for common use cases.
