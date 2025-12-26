@@ -18,6 +18,13 @@ from tork.workflows import (
     WorkflowEngine,
     WorkflowBuilder,
 )
+from tork.consensus import (
+    DebateParticipant,
+    DebateRound,
+    ConsensusConfig,
+    DebateResult,
+    DebateEngine,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -28,5 +35,10 @@ __all__ = [
     "WorkflowResult",
     "WorkflowEngine",
     "WorkflowBuilder",
+    "DebateParticipant",
+    "DebateRound",
+    "ConsensusConfig",
+    "DebateResult",
+    "DebateEngine",
     "__version__",
 ]

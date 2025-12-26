@@ -9,6 +9,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **PII Redactor**: Detects and redacts sensitive data (email, phone, SSN, credit cards, IPs, API keys)
 - **Adapters**: Integration with AI frameworks (LangChain, CrewAI, AutoGen, OpenAI Agents)
 - **Workflows**: Agent chaining and workflow orchestration with governance
+- **Consensus**: Multi-agent debate and consensus building system
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -62,6 +63,16 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Max cost limits and token tracking
 - Compliance receipts per step
 
+### Debate & Consensus System
+- DebateParticipant model with roles (debater, critic, synthesizer, judge) and voting weights
+- DebateRound model tracking responses, critiques, tokens, and costs
+- ConsensusConfig with methods: synthesis, voting, judge, unanimous
+- DebateEngine for orchestrating multi-agent debates
+- Consensus strategies: SynthesisStrategy, VotingStrategy, JudgeStrategy, UnanimousStrategy
+- Pre-built templates: two_agent_critique, three_way_debate, expert_panel
+- Cost limit enforcement and stop-on-consensus support
+- Governance applied to all responses with compliance receipts
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -84,6 +95,7 @@ tork-governance/
 │   ├── scanner/        # MCP security scanning (rules, scanner)
 │   ├── adapters/       # Framework integrations (LangChain, CrewAI, AutoGen, OpenAI Agents)
 │   ├── workflows/      # Agent chaining and workflow orchestration
+│   ├── consensus/      # Multi-agent debate and consensus building
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
@@ -149,11 +161,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **10** AutoGen adapter tests (middleware, governed agents, group chat)
 - **23** OpenAI Agents SDK adapter tests (middleware, governed agent/runner, tool validation, receipts)
 - **27** Workflow tests (models, engine, builder, templates, pause/resume, async)
+- **26** Consensus tests (debate models, engine, strategies, templates, cost limits)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-26: Debate/Consensus system with DebateEngine, strategies, and templates
 - 2025-12-26: Agent Chaining/Workflow system with WorkflowEngine, WorkflowBuilder, and templates
 - 2025-12-26: OpenAI Agents SDK integration adapter with middleware, governed wrappers, tool validation
 - 2025-12-26: Professional README update with badges and framework integration examples
