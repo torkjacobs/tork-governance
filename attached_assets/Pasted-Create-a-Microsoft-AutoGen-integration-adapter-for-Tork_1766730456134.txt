@@ -1,0 +1,98 @@
+Create a Microsoft AutoGen integration adapter for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/adapters/autogen/__init__.py with exports
+
+2. Create src/tork/adapters/autogen/middleware.py:
+   
+   class TorkAutoGenMiddleware:
+       """Middleware to integrate Tork governance with Microsoft AutoGen agents."""
+       
+       def __init__(self, engine: GovernanceEngine = None, agent_id: str = None):
+           - Initialize with optional governance engine
+           - If no engine provided, create default with PII redaction enabled
+           - Store agent_id for tracking
+       
+       def wrap_agent(self, agent) -> "GovernedAutoGenAgent":
+           """Wrap an AutoGen agent with governance controls."""
+           - Return a GovernedAutoGenAgent that intercepts message handling
+       
+       def process_message(self, message: dict, sender: str = None) -> dict:
+           """Process incoming message through governance."""
+           - Evaluate message content against policies
+           - Redact PII if needed
+           - Return modified message or raise GovernanceError
+       
+       def process_response(self, response: dict, agent_name: str = None) -> dict:
+           """Process outgoing response through governance."""
+           - Evaluate response against policies
+           - Redact sensitive data
+           - Generate compliance receipt
+           - Return modified response
+       
+       def create_governed_group_chat(self, agents: list, **kwargs) -> "GovernedGroupChat":
+           """Create a group chat with governance on all messages."""
+
+3. Create src/tork/adapters/autogen/governed.py:
+   
+   class GovernedAutoGenAgent:
+       """An AutoGen agent wrapped with Tork governance."""
+       
+       def __init__(self, agent, middleware: TorkAutoGenMiddleware):
+           self._agent = agent
+           self._middleware = middleware
+       
+       def receive(self, message, sender, request_reply=None):
+           """Receive message with governance checks."""
+           - Process message through middleware
+           - Call original agent receive
+           - Process response through middleware
+       
+       def generate_reply(self, messages=None, sender=None, **kwargs):
+           """Generate reply with governance."""
+           - Process input messages
+           - Generate reply via original agent
+           - Process output through governance
+           - Return governed reply
+       
+       def __getattr__(self, name):
+           """Proxy all other attributes to wrapped agent."""
+           return getattr(self._agent, name)
+   
+   class GovernedGroupChat:
+       """An AutoGen GroupChat with governance on all agent communications."""
+       
+       def __init__(self, agents: list, middleware: TorkAutoGenMiddleware, **kwargs):
+           self._agents = [middleware.wrap_agent(a) for a in agents]
+           self._middleware = middleware
+           self._kwargs = kwargs
+       
+       @property
+       def agents(self):
+           return self._agents
+
+4. Create src/tork/adapters/autogen/exceptions.py:
+   - AutoGenGovernanceError(Exception): Base exception
+   - MessageBlockedError(Exception): When message is blocked by policy
+   - ResponseBlockedError(Exception): When response is blocked
+
+5. Create tests/test_autogen.py with 15+ tests:
+   - Test middleware initialization
+   - Test wrap_agent
+   - Test process_message with clean content
+   - Test process_message with PII (redaction)
+   - Test process_message with blocked content
+   - Test process_response
+   - Test GovernedAutoGenAgent receive
+   - Test GovernedAutoGenAgent generate_reply
+   - Test GovernedAutoGenAgent proxies attributes
+   - Test GovernedGroupChat creation
+   - Test compliance receipt generation
+   - Mock AutoGen classes for testing (don't require autogen package)
+
+6. Update src/tork/adapters/__init__.py to export AutoGen adapter
+
+Note: Don't require pyautogen as a dependency - make it optional. Check if autogen is installed and provide helpful error if not.
+
+Run: python -m pytest tests/test_autogen.py -v

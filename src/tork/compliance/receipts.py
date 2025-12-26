@@ -1,10 +1,3 @@
-"""
-Compliance Receipts
-
-Provides audit trail generation for governance decisions with
-tamper-detection signatures and payload hashing.
-"""
-
 import hashlib
 import hmac
 import json
@@ -58,7 +51,7 @@ class ReceiptGenerator:
         self.signing_key = signing_key
         logger.info("ReceiptGenerator initialized")
     
-    def generate(
+    def create_receipt(
         self,
         result: EvaluationResult,
         request: EvaluationRequest,
@@ -130,6 +123,15 @@ class ReceiptGenerator:
         )
         
         return receipt
+    
+    def generate(
+        self,
+        result: EvaluationResult,
+        request: EvaluationRequest,
+        policy_names: Optional[list[str]] = None,
+    ) -> PolicyReceipt:
+        """Alias for create_receipt to maintain backward compatibility if needed."""
+        return self.create_receipt(result, request, policy_names)
     
     def verify(self, receipt: PolicyReceipt) -> bool:
         """
