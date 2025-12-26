@@ -10,5 +10,23 @@ __author__ = "Tork Team"
 
 from tork.core import GovernanceEngine
 from tork.compliance import PolicyValidator
+from tork.workflows import (
+    WorkflowStep,
+    WorkflowDefinition,
+    StepResult,
+    WorkflowResult,
+    WorkflowEngine,
+    WorkflowBuilder,
+)
 
-__all__ = ["GovernanceEngine", "PolicyValidator", "__version__"]
+__all__ = [
+    "GovernanceEngine",
+    "PolicyValidator",
+    "WorkflowStep",
+    "WorkflowDefinition",
+    "StepResult",
+    "WorkflowResult",
+    "WorkflowEngine",
+    "WorkflowBuilder",
+    "__version__",
+]

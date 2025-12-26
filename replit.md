@@ -8,6 +8,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **Governance Engine**: Policy evaluation with ALLOW/DENY/REDACT decisions
 - **PII Redactor**: Detects and redacts sensitive data (email, phone, SSN, credit cards, IPs, API keys)
 - **Adapters**: Integration with AI frameworks (LangChain, CrewAI, AutoGen, OpenAI Agents)
+- **Workflows**: Agent chaining and workflow orchestration with governance
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -50,6 +51,17 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Severity filtering: critical, high, medium, low, info
 - Exit codes: 1 for critical/high findings, 0 otherwise
 
+### Workflow System
+- WorkflowStep and WorkflowDefinition models for defining multi-step agent workflows
+- WorkflowEngine for executing governed workflows with chaining support
+- WorkflowBuilder fluent API for building workflows programmatically
+- Pre-built templates: research_critique_rewrite, multi_agent_consensus, review_and_approve
+- Input mapping between steps (previous outputs → next inputs)
+- Failure strategies: stop, skip, retry, fallback
+- Human approval gates with pause/resume
+- Max cost limits and token tracking
+- Compliance receipts per step
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -71,11 +83,12 @@ tork-governance/
 │   ├── core/           # Engine, models, policies, redactor
 │   ├── scanner/        # MCP security scanning (rules, scanner)
 │   ├── adapters/       # Framework integrations (LangChain, CrewAI, AutoGen, OpenAI Agents)
+│   ├── workflows/      # Agent chaining and workflow orchestration
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
 │   └── api/            # FastAPI endpoints
-├── tests/              # Test suite (245 tests)
+├── tests/              # Test suite (272 tests)
 └── templates/policies/ # YAML policy templates
 ```
 
@@ -92,6 +105,7 @@ pytest tests/test_engine_redactor_integration.py -v
 pytest tests/test_scanner.py -v
 pytest tests/test_policies.py -v
 pytest tests/test_openai_agents.py -v
+pytest tests/test_workflows.py -v
 ```
 
 ## CLI Usage
@@ -134,11 +148,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **11** CrewAI adapter tests (middleware, governed agents/crews, PII redaction)
 - **10** AutoGen adapter tests (middleware, governed agents, group chat)
 - **23** OpenAI Agents SDK adapter tests (middleware, governed agent/runner, tool validation, receipts)
+- **27** Workflow tests (models, engine, builder, templates, pause/resume, async)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-26: Agent Chaining/Workflow system with WorkflowEngine, WorkflowBuilder, and templates
 - 2025-12-26: OpenAI Agents SDK integration adapter with middleware, governed wrappers, tool validation
 - 2025-12-26: Professional README update with badges and framework integration examples
 - 2025-12-26: Microsoft AutoGen integration adapter with governed agents and group chats
