@@ -8,7 +8,6 @@ from typing import Any, Optional
 from datetime import datetime
 import re
 import structlog
-import copy
 
 from tork.core.models import EvaluationRequest, EvaluationResult, PolicyDecision
 from tork.core.policy import Policy, PolicyRule, PolicyAction

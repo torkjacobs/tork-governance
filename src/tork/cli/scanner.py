@@ -5,10 +5,8 @@ Command-line tool for scanning and validating governance policies.
 """
 
 import json
-import sys
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -274,7 +272,7 @@ def policy(
     ),
 ) -> None:
     """Validate governance policies."""
-    console.print(f"[bold blue]Tork Policy Validator[/bold blue]")
+    console.print("[bold blue]Tork Policy Validator[/bold blue]")
     console.print(f"Validating policies at: {policy_path}")
     
     if not policy_path.exists():

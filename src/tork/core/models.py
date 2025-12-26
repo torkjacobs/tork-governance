@@ -10,7 +10,7 @@ from typing import Any, Optional, TYPE_CHECKING
 from pydantic import BaseModel, Field, ConfigDict
 
 if TYPE_CHECKING:
-    from tork.core.redactor import PIIMatch
+    pass
 
 
 class PolicyDecision(str, Enum):

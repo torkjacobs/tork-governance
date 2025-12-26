@@ -5,7 +5,6 @@ Provides 10 security rules for scanning MCP configurations.
 """
 
 import re
-from typing import Optional
 from tork.scanner.rules import SecurityRule, ScanFinding, ScanSeverity
 
 

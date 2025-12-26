@@ -5,7 +5,7 @@ Integrates governance controls into LangChain's callback system
 for monitoring and controlling LLM, chain, and tool operations.
 """
 
-from typing import Any, Optional, Dict, List, Union
+from typing import Any, Optional, Dict, List
 import structlog
 
 from tork.core.engine import GovernanceEngine
