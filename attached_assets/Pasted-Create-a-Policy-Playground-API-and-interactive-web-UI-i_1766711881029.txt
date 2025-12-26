@@ -1,0 +1,52 @@
+Create a Policy Playground API and interactive web UI in src/tork/api/
+
+REQUIREMENTS:
+
+1. Create src/tork/api/playground.py with PlaygroundService class:
+   - __init__(self, engine: GovernanceEngine = None, scanner: MCPScanner = None)
+   - evaluate_payload(self, payload: dict, agent_id: str = "playground") -> dict
+   - redact_text(self, text: str, pii_types: list[str] = None) -> dict
+   - scan_content(self, content: str, filename: str = "config.json") -> dict
+   - list_policies(self) -> list[dict]
+
+2. Update src/tork/api/app.py (or create if needed) with FastAPI endpoints:
+   
+   POST /playground/evaluate
+   - Request: { "payload": dict, "agent_id": str (optional) }
+   - Response: { "decision": str, "violations": list, "modified_payload": dict, "pii_found": list, "processing_time_ms": float }
+
+   POST /playground/redact
+   - Request: { "text": str, "pii_types": list[str] (optional) }
+   - Response: { "original": str, "redacted": str, "matches": list, "processing_time_ms": float }
+
+   POST /playground/scan
+   - Request: { "content": str, "filename": str (optional) }
+   - Response: { "findings": list, "summary": dict, "processing_time_ms": float }
+
+   GET /playground/policies
+   - Response: { "policies": list of available policy info }
+
+   GET /health
+   - Response: { "status": "healthy", "version": "0.1.0" }
+
+3. Create src/tork/api/static/index.html - Interactive playground UI:
+   - Use Tailwind CSS from CDN for styling
+   - Modern, clean dark theme
+   - Three tabs: "Evaluate", "Redact", "Scan"
+   - Evaluate tab: JSON textarea for payload, "Evaluate" button, results display showing decision, violations, modified payload
+   - Redact tab: Text textarea, checkboxes for PII types (email, phone, ssn, credit_card, ip_address, api_key), "Redact" button, show before/after
+   - Scan tab: Textarea for config content, filename input, "Scan" button, findings list with severity colors (critical=red, high=orange, medium=yellow, low=blue)
+   - Show processing time for each operation
+   - Use fetch() for API calls
+   - Mobile responsive
+
+4. Update src/tork/api/app.py to serve static files:
+   - Mount StaticFiles at "/" serving from src/tork/api/static/
+   - Make sure API routes are registered before static files
+
+5. Create tests/test_playground.py:
+   - Test PlaygroundService methods
+   - Test API endpoints (evaluate, redact, scan, policies, health)
+   - Test with various payloads
+
+Run: python -m pytest tests/test_playground.py -v

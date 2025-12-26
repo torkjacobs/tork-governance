@@ -50,6 +50,19 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Severity filtering: critical, high, medium, low, info
 - Exit codes: 1 for critical/high findings, 0 otherwise
 
+### Policy Playground API & Web UI
+- Interactive web interface at root URL (/)
+- Three tabs: Evaluate, Redact, Scan
+- PlaygroundService class for programmatic access
+- REST endpoints:
+  - POST /playground/evaluate - Evaluate payloads against policies
+  - POST /playground/redact - Redact PII from text with type filtering
+  - POST /playground/scan - Scan config content for security issues
+  - GET /playground/policies - List available policies
+  - GET /health - Health check endpoint
+- Dark theme UI with Tailwind CSS
+- Real-time processing time display
+
 ## Project Structure
 
 ```
@@ -62,7 +75,7 @@ tork-governance/
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
 │   └── api/            # FastAPI endpoints
-├── tests/              # Test suite (96 tests)
+├── tests/              # Test suite (201 tests)
 └── templates/policies/ # YAML policy templates
 ```
 
@@ -118,9 +131,12 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **19** Compliance Receipt tests (generation, signature verification, memory/file storage, queries)
 - **20** LangChain adapter tests (callback handler, governed chain, violations, redaction)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
+- **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-26: Policy Playground API and interactive web UI with evaluate/redact/scan tabs
+- 2025-12-25: PyPI publishing preparation (README, CHANGELOG, LICENSE, pyproject.toml)
 - 2024-12-25: HTTP proxy adapter with GovernedProxy and FastAPI server
 - 2024-12-25: LangChain middleware integration with callback handler and governed chain wrapper
 - 2024-12-23: Compliance receipts system with audit trails, tamper detection, and storage backends
