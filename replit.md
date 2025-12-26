@@ -7,7 +7,7 @@ A universal governance SDK for AI agents.
 This project provides a comprehensive governance framework for AI agent systems:
 - **Governance Engine**: Policy evaluation with ALLOW/DENY/REDACT decisions
 - **PII Redactor**: Detects and redacts sensitive data (email, phone, SSN, credit cards, IPs, API keys)
-- **Adapters**: Integration with AI frameworks (LangChain middleware included)
+- **Adapters**: Integration with AI frameworks (LangChain, CrewAI, AutoGen, OpenAI Agents)
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -70,12 +70,12 @@ tork-governance/
 ├── src/tork/
 │   ├── core/           # Engine, models, policies, redactor
 │   ├── scanner/        # MCP security scanning (rules, scanner)
-│   ├── adapters/       # Framework integrations
+│   ├── adapters/       # Framework integrations (LangChain, CrewAI, AutoGen, OpenAI Agents)
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
 │   └── api/            # FastAPI endpoints
-├── tests/              # Test suite (201 tests)
+├── tests/              # Test suite (245 tests)
 └── templates/policies/ # YAML policy templates
 ```
 
@@ -91,6 +91,7 @@ pytest tests/test_redactor.py -v
 pytest tests/test_engine_redactor_integration.py -v
 pytest tests/test_scanner.py -v
 pytest tests/test_policies.py -v
+pytest tests/test_openai_agents.py -v
 ```
 
 ## CLI Usage
@@ -130,11 +131,18 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **13** JWT Identity tests (token issuance, verification, expiry, revocation, agent management)
 - **19** Compliance Receipt tests (generation, signature verification, memory/file storage, queries)
 - **20** LangChain adapter tests (callback handler, governed chain, violations, redaction)
+- **11** CrewAI adapter tests (middleware, governed agents/crews, PII redaction)
+- **10** AutoGen adapter tests (middleware, governed agents, group chat)
+- **23** OpenAI Agents SDK adapter tests (middleware, governed agent/runner, tool validation, receipts)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-26: OpenAI Agents SDK integration adapter with middleware, governed wrappers, tool validation
+- 2025-12-26: Professional README update with badges and framework integration examples
+- 2025-12-26: Microsoft AutoGen integration adapter with governed agents and group chats
+- 2025-12-26: CrewAI integration adapter with governed agents and crews
 - 2025-12-26: Policy Playground API and interactive web UI with evaluate/redact/scan tabs
 - 2025-12-25: PyPI publishing preparation (README, CHANGELOG, LICENSE, pyproject.toml)
 - 2024-12-25: HTTP proxy adapter with GovernedProxy and FastAPI server

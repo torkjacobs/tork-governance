@@ -28,6 +28,15 @@ from tork.adapters.autogen import (
     MessageBlockedError,
     ResponseBlockedError,
 )
+from tork.adapters.openai_agents import (
+    TorkOpenAIAgentsMiddleware,
+    GovernedOpenAIAgent,
+    GovernedRunner,
+    OpenAIAgentGovernanceError,
+    InputBlockedError,
+    OutputBlockedError,
+    ToolCallBlockedError,
+)
 
 __all__ = [
     "BaseAdapter",
@@ -46,4 +55,11 @@ __all__ = [
     "AutoGenGovernanceError",
     "MessageBlockedError",
     "ResponseBlockedError",
+    "TorkOpenAIAgentsMiddleware",
+    "GovernedOpenAIAgent",
+    "GovernedRunner",
+    "OpenAIAgentGovernanceError",
+    "InputBlockedError",
+    "OutputBlockedError",
+    "ToolCallBlockedError",
 ]
