@@ -13,10 +13,23 @@ from tork.adapters.langchain import (
     create_governed_chain,
 )
 
+from tork.adapters.crewai import (
+    TorkCrewAIMiddleware,
+    GovernedAgent,
+    GovernedCrew,
+    GovernanceBlockedError,
+    PIIDetectedError,
+)
+
 __all__ = [
     "BaseAdapter",
     "GovernanceViolation",
     "TorkCallbackHandler",
     "GovernedChain",
     "create_governed_chain",
+    "TorkCrewAIMiddleware",
+    "GovernedAgent",
+    "GovernedCrew",
+    "GovernanceBlockedError",
+    "PIIDetectedError",
 ]

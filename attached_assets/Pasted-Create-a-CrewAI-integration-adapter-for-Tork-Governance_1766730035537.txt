@@ -1,0 +1,93 @@
+Create a CrewAI integration adapter for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/adapters/crewai/__init__.py with exports
+
+2. Create src/tork/adapters/crewai/middleware.py:
+   
+   class TorkCrewAIMiddleware:
+       """Middleware to integrate Tork governance with CrewAI agents."""
+       
+       def __init__(self, engine: GovernanceEngine = None, agent_id: str = None):
+           - Initialize with optional governance engine
+           - If no engine provided, create default with PII redaction enabled
+           - Store agent_id for tracking
+       
+       def wrap_agent(self, agent) -> "GovernedAgent":
+           """Wrap a CrewAI agent with governance controls."""
+           - Return a GovernedAgent that intercepts agent actions
+       
+       def wrap_crew(self, crew) -> "GovernedCrew":
+           """Wrap an entire CrewAI crew with governance."""
+           - Apply governance to all agents in the crew
+       
+       def before_task(self, task, agent) -> dict:
+           """Called before a task is executed."""
+           - Evaluate task input against policies
+           - Redact PII if needed
+           - Return modified task context or raise GovernanceError
+       
+       def after_task(self, task, result, agent) -> dict:
+           """Called after task completion."""
+           - Evaluate output against policies
+           - Redact sensitive data from results
+           - Generate compliance receipt
+           - Return modified result
+
+3. Create src/tork/adapters/crewai/governed.py:
+   
+   class GovernedAgent:
+       """A CrewAI agent wrapped with Tork governance."""
+       
+       def __init__(self, agent, middleware: TorkCrewAIMiddleware):
+           self._agent = agent
+           self._middleware = middleware
+       
+       def execute_task(self, task, context=None):
+           """Execute task with governance checks."""
+           - Call middleware.before_task()
+           - Execute original agent task
+           - Call middleware.after_task()
+           - Return governed result
+       
+       def __getattr__(self, name):
+           """Proxy all other attributes to wrapped agent."""
+           return getattr(self._agent, name)
+   
+   class GovernedCrew:
+       """A CrewAI crew with all agents governed."""
+       
+       def __init__(self, crew, middleware: TorkCrewAIMiddleware):
+           self._crew = crew
+           self._middleware = middleware
+           self._governed_agents = []
+       
+       def kickoff(self, inputs=None):
+           """Run the crew with governance on all tasks."""
+           - Apply governance before/after each task
+           - Track all compliance receipts
+           - Return results with audit trail
+
+4. Create src/tork/adapters/crewai/exceptions.py:
+   - GovernanceBlockedError(Exception): When task is blocked by policy
+   - PIIDetectedError(Exception): When PII detected and action is DENY
+
+5. Create tests/test_crewai.py with 15+ tests:
+   - Test middleware initialization
+   - Test wrap_agent
+   - Test wrap_crew  
+   - Test before_task with clean input
+   - Test before_task with PII (redaction)
+   - Test before_task with blocked content
+   - Test after_task output processing
+   - Test GovernedAgent proxies attributes
+   - Test GovernedCrew kickoff
+   - Test compliance receipt generation
+   - Mock CrewAI Agent and Crew classes for testing
+
+6. Update src/tork/adapters/__init__.py to export CrewAI adapter
+
+Note: Don't require crewai as a dependency - make it optional. Check if crewai is installed and provide helpful error if not.
+
+Run: python -m pytest tests/test_crewai.py -v
