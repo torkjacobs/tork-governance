@@ -1,125 +1,100 @@
 # Tork Governance SDK
 
-[![PyPI version](https://badge.fury.io/py/tork-governance.svg)](https://badge.fury.io/py/tork-governance)
-[![Python versions](https://img.shields.io/pypi/pyversions/tork-governance.svg)](https://pypi.org/project/tork-governance/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/pypi/v/tork-governance)](https://pypi.org/project/tork-governance/)
+[![Python versions](https://img.shields.io/pypi/pyversions/tork-governance)](https://pypi.org/project/tork-governance/)
+[![License: MIT](https://img.shields.io/github/license/torkjacobs/tork-governance)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/github/actions/workflow/status/torkjacobs/tork-governance/ci.yml?label=tests)](https://github.com/torkjacobs/tork-governance/actions)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://torkjacobs.github.io/tork-governance/)
 
-A universal governance SDK for AI agents. Provides comprehensive policy enforcement, PII detection, security scanning, and audit trails for AI agent systems.
+**Enterprise-grade governance layer for AI agents.** Enforce policies, redact PII, scan for vulnerabilities, and maintain compliance - all in one SDK.
 
-## Installation
+## 🚀 Quick Start
 
 ```bash
 pip install tork-governance
 ```
 
-With LangChain integration:
-```bash
-pip install tork-governance[langchain]
-```
-
-## Quick Start
-
 ```python
 from tork.core import GovernanceEngine, PIIRedactor
-from tork.core.policy import Policy, PolicyRule, PolicyAction, PolicyOperator
 from tork.core.models import EvaluationRequest
 
-# Create engine with PII protection
+# Initialize with PII protection
 engine = GovernanceEngine(pii_redactor=PIIRedactor())
 
-# Add a security policy
-policy = Policy(
-    name="block-sql-injection",
-    rules=[PolicyRule(
-        field="query",
-        operator=PolicyOperator.REGEX,
-        value=r"(?i)(drop|delete|truncate)\s+table",
-        action=PolicyAction.DENY,
-    )]
-)
-engine.add_policy(policy)
-
-# Evaluate a request
+# Protect your payload
 result = engine.evaluate(EvaluationRequest(
-    agent_id="agent-001",
-    action="execute_query",
-    payload={"query": "SELECT * FROM users", "email": "user@example.com"}
+    agent_id="my-agent",
+    payload={"msg": "Contact me at test@example.com"}
 ))
 
-print(f"Decision: {result.decision}")  # REDACT (email detected)
-print(f"Modified: {result.modified_payload}")  # email replaced with [REDACTED_EMAIL]
+print(result.decision) # PolicyDecision.REDACT
+print(result.modified_payload["msg"]) # "Contact me at [REDACTED_EMAIL]"
 ```
 
-## Features
+## ✨ Features
 
-- **Policy Engine** - Declarative rules with ALLOW/DENY/REDACT decisions
-- **PII Detection** - Automatic detection and redaction of 6 PII types:
-  - Email addresses
-  - Phone numbers
-  - Social Security Numbers
-  - Credit card numbers (with Luhn validation)
-  - IP addresses
-  - API keys
-- **MCP Security Scanner** - 10 security rules for config scanning
-- **JWT Authentication** - Agent identity management with token lifecycle
-- **Compliance Receipts** - HMAC-signed audit trails with tamper detection
-- **LangChain Integration** - Callback handlers and governed chain wrappers
-- **HTTP Proxy** - Governed HTTP proxy with FastAPI server
-- **Policy Templates** - Ready-to-use policies for PII, API security, HIPAA compliance
+- **Governance Engine**: Declarative rules with ALLOW/DENY/REDACT decisions. Supports nested fields and regex.
+- **PII Redactor**: Automatic detection and redaction of Emails, SSNs, Credit Cards, IPs, and API Keys.
+- **MCP Security Scanner**: Built-in scanner with 10 rules to detect hardcoded secrets, permissive CORS, and insecure configs.
+- **Compliance Receipts**: HMAC-signed audit trails with tamper detection for every governed action.
+- **Interactive Playground**: Built-in Policy Playground UI for testing policies and redaction in real-time.
 
-## CLI Usage
+## 🔌 Framework Integrations
+
+### LangChain
+```python
+from tork.adapters.langchain import create_governed_chain
+governed_chain = create_governed_chain(your_chain, engine)
+```
+
+### CrewAI
+```python
+from tork.adapters.crewai import TorkCrewAIMiddleware
+governed_agent = TorkCrewAIMiddleware().wrap_agent(base_agent)
+```
+
+### AutoGen
+```python
+from tork.adapters.autogen import TorkAutoGenMiddleware
+governed_agent = TorkAutoGenMiddleware().wrap_agent(base_agent)
+```
+
+### HTTP Proxy
+Comprehensive `GovernedProxy` server to wrap any API with governance controls.
+
+## 📖 Documentation
+
+Visit our [Documentation Site](https://torkjacobs.github.io/tork-governance/) for:
+- [Quickstart Guide](https://torkjacobs.github.io/tork-governance/quickstart/)
+- [API Reference](https://torkjacobs.github.io/tork-governance/api/)
+- [Framework Integrations](https://torkjacobs.github.io/tork-governance/integrations/)
+- [Policy Examples](https://torkjacobs.github.io/tork-governance/examples/)
+
+## 🛠️ CLI Tools
 
 ```bash
-# Scan configuration files for security issues
-tork scan ./configs
-
-# Scan with severity filter
+# Scan configuration files for security vulnerabilities
 tork scan ./configs --severity high
 
-# Output as JSON
-tork scan ./configs --output json
-
-# Output as SARIF (for CI/CD integration)
-tork scan ./configs --output sarif
+# Check version
+tork --version
 ```
 
-## LangChain Integration
+## 🧪 Development
 
-```python
-from tork.core import GovernanceEngine
-from tork.adapters.langchain import TorkCallbackHandler, create_governed_chain
-
-engine = GovernanceEngine()
-handler = TorkCallbackHandler(engine=engine)
-
-# Use with any LangChain chain
-governed_chain = create_governed_chain(your_chain, engine)
-result = governed_chain.invoke({"input": "Hello"})
+```bash
+git clone https://github.com/torkjacobs/tork-governance.git
+pip install -e ".[dev]"
+pytest tests/
 ```
 
-## HTTP Proxy
+## 📄 License
 
-```python
-from tork.core import GovernanceEngine
-from tork.adapters.http import ProxyConfig, create_proxy_app
+MIT License. See [LICENSE](LICENSE) for details.
 
-config = ProxyConfig(target_base_url="https://api.example.com")
-engine = GovernanceEngine()
+## 🔗 Links
 
-app = create_proxy_app(config, engine)
-# Run with: uvicorn module:app --host 0.0.0.0 --port 8000
-```
-
-## Documentation
-
-For full documentation, visit [GitHub](https://github.com/torkjacobs/tork-governance).
-
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
-## Links
-
-- [Homepage](https://tork.network)
-- [GitHub Repository](https://github.com/torkjacobs/tork-governance)
-- [Issue Tracker](https://github.com/torkjacobs/tork-governance/issues)
+- [PyPI](https://pypi.org/project/tork-governance/)
+- [GitHub](https://github.com/torkjacobs/tork-governance)
+- [Documentation](https://torkjacobs.github.io/tork-governance/)
+- [Tork Network](https://tork.network)
