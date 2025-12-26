@@ -1,0 +1,147 @@
+Create a Debate/Consensus system for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/consensus/__init__.py with exports
+
+2. Create src/tork/consensus/models.py:
+   
+   class DebateParticipant(BaseModel):
+       """A participant in a debate."""
+       id: str
+       name: str
+       agent_type: str  # "langchain", "crewai", "autogen", "openai_agents", "custom"
+       role: str = "debater"  # "debater", "critic", "synthesizer", "judge"
+       config: Dict[str, Any] = {}
+       weight: float = 1.0  # Voting weight
+   
+   class DebateRound(BaseModel):
+       """A single round of debate."""
+       round_number: int
+       participant_id: str
+       input_prompt: str
+       response: str
+       critique_of: Optional[str] = None  # ID of response being critiqued
+       timestamp: datetime
+       tokens_used: int = 0
+       cost: float = 0.0
+   
+   class ConsensusConfig(BaseModel):
+       """Configuration for consensus building."""
+       method: str = "synthesis"  # "synthesis", "voting", "judge", "unanimous"
+       max_rounds: int = 3
+       min_agreement_threshold: float = 0.7  # For voting method
+       cost_limit: float = 10.0  # Max cost before forcing conclusion
+       stop_on_consensus: bool = True
+       require_all_participants: bool = True
+   
+   class DebateResult(BaseModel):
+       """Result of a debate session."""
+       session_id: str
+       status: str  # "consensus_reached", "max_rounds_reached", "cost_limit_reached", "no_consensus"
+       rounds: List[DebateRound]
+       final_consensus: Optional[str] = None
+       agreement_score: float = 0.0
+       total_tokens: int = 0
+       total_cost: float = 0.0
+       receipt_ids: List[str] = []
+
+3. Create src/tork/consensus/engine.py:
+   
+   class DebateEngine:
+       """Orchestrate multi-agent debates with consensus building."""
+       
+       def __init__(self, governance_engine: GovernanceEngine = None):
+           - Initialize with optional governance engine
+           - Store participant executors
+       
+       def register_executor(self, agent_type: str, executor: Callable):
+           """Register an executor for an agent type."""
+       
+       def debate(
+           self,
+           topic: str,
+           participants: List[DebateParticipant],
+           config: ConsensusConfig = None,
+           initial_context: str = ""
+       ) -> DebateResult:
+           """Run a debate session."""
+           - Round 1: Each participant responds to topic
+           - Round 2+: Participants critique each other's responses
+           - Apply governance at each response
+           - Check for consensus after each round
+           - Enforce cost limits
+           - Generate compliance receipts
+       
+       def _run_round(self, round_num: int, participants: List, context: str) -> List[DebateRound]:
+           """Run a single debate round."""
+       
+       def _check_consensus(self, rounds: List[DebateRound], config: ConsensusConfig) -> Tuple[bool, float]:
+           """Check if consensus has been reached."""
+       
+       def _synthesize(self, rounds: List[DebateRound], synthesizer: DebateParticipant) -> str:
+           """Synthesize all responses into final consensus."""
+       
+       def _vote(self, rounds: List[DebateRound], participants: List[DebateParticipant]) -> Tuple[str, float]:
+           """Use voting to determine consensus."""
+       
+       def _judge(self, rounds: List[DebateRound], judge: DebateParticipant) -> str:
+           """Use a judge to determine the best response."""
+
+4. Create src/tork/consensus/strategies.py:
+   
+   class ConsensusStrategy(ABC):
+       """Base class for consensus strategies."""
+       
+       @abstractmethod
+       def evaluate(self, rounds: List[DebateRound], participants: List[DebateParticipant]) -> Tuple[str, float]:
+           """Evaluate and return (consensus_text, agreement_score)."""
+   
+   class SynthesisStrategy(ConsensusStrategy):
+       """Combine all viewpoints into a unified response."""
+   
+   class VotingStrategy(ConsensusStrategy):
+       """Weighted voting on responses."""
+   
+   class JudgeStrategy(ConsensusStrategy):
+       """Single judge picks the best response."""
+   
+   class UnanimousStrategy(ConsensusStrategy):
+       """Require all participants to agree."""
+
+5. Create src/tork/consensus/templates.py:
+   
+   Pre-built debate configurations:
+   
+   def two_agent_critique() -> Tuple[List[DebateParticipant], ConsensusConfig]:
+       """Agent A proposes, Agent B critiques, synthesize."""
+   
+   def three_way_debate() -> Tuple[List[DebateParticipant], ConsensusConfig]:
+       """Three agents debate, judge decides."""
+   
+   def expert_panel() -> Tuple[List[DebateParticipant], ConsensusConfig]:
+       """Multiple experts, weighted voting."""
+
+6. Create tests/test_consensus.py with 18+ tests:
+   - Test DebateParticipant model
+   - Test DebateRound model
+   - Test ConsensusConfig model
+   - Test DebateResult model
+   - Test DebateEngine initialization
+   - Test register_executor
+   - Test simple two-agent debate
+   - Test debate with critique rounds
+   - Test synthesis consensus method
+   - Test voting consensus method
+   - Test judge consensus method
+   - Test max_rounds limit
+   - Test cost_limit enforcement
+   - Test stop_on_consensus
+   - Test governance applied to responses
+   - Test compliance receipts generated
+   - Test debate templates
+   - Test agreement_score calculation
+
+7. Update src/tork/__init__.py to export consensus classes
+
+Run: python -m pytest tests/test_consensus.py -v
