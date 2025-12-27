@@ -12,7 +12,7 @@ def test_import_tork():
     import tork
     
     assert hasattr(tork, "__version__")
-    assert tork.__version__ == "0.5.0"
+    assert tork.__version__ == "0.6.0"
 
 
 def test_import_core():
