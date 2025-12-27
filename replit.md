@@ -13,6 +13,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **ACL**: Agent Communication Language message schema with FIPA protocols
 - **Personas**: Custom agents/personas with governance-enforced execution
 - **Capabilities**: Agent capability labels with proficiency levels and task matching
+- **Routing**: Role/sector-based request routing with governance
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -105,6 +106,15 @@ This project provides a comprehensive governance framework for AI agent systems:
 - TaskMatcher for matching tasks to best-suited agents with ranking and recommendations
 - Pre-built profiles: GPT-4, GPT-4 Turbo, Claude 3 Opus, Claude 3 Sonnet, Gemini Pro, Llama 3
 
+### Role/Sector Routing System
+- Sector enum with 11 industry sectors (education, healthcare, finance, legal, technology, etc.)
+- Role enum with 24 user roles (student, teacher, doctor, developer, analyst, etc.)
+- RoutingContext model with sector, role, permissions, and metadata
+- RouteConfig model with target agent/persona, governance policy, and allowed/blocked actions
+- RoutingRule and RuleEngine for flexible rule-based routing
+- SectorRouter for routing requests with governance integration and fallback support
+- Pre-built routes for education, healthcare, finance, legal, and technology sectors
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -131,6 +141,7 @@ tork-governance/
 │   ├── acl/            # Agent Communication Language message schema
 │   ├── personas/       # Custom agents/personas system
 │   ├── capabilities/   # Agent capability labels and task matching
+│   ├── routing/        # Role/sector-based request routing
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
@@ -200,11 +211,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **33** ACL tests (performatives, messages, protocols, router, builder, governance)
 - **34** Personas tests (models, store, runtime, builder, templates, governance)
 - **26** Capabilities tests (models, registry, defaults, matcher, ranking)
+- **28** Routing tests (models, rules, router, defaults, governance integration)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-27: Role/Sector Routing system with SectorRouter, rules engine, and sector defaults
 - 2025-12-27: Agent Capability Labels system with registry, matcher, and default profiles
 - 2025-12-27: Custom Agents/Personas system with store, runtime, builder, and templates
 - 2025-12-26: ACL message schema system with FIPA protocols, router, and governance

@@ -48,6 +48,13 @@ from tork.capabilities import (
     CapabilityRegistry,
     TaskMatcher,
 )
+from tork.routing import (
+    Sector,
+    Role,
+    RoutingContext,
+    RouteConfig,
+    SectorRouter,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -80,5 +87,10 @@ __all__ = [
     "AgentProfile",
     "CapabilityRegistry",
     "TaskMatcher",
+    "Sector",
+    "Role",
+    "RoutingContext",
+    "RouteConfig",
+    "SectorRouter",
     "__version__",
 ]
