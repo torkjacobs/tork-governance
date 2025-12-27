@@ -1,0 +1,101 @@
+Update the MkDocs documentation site to include all new modules from v0.5.0 and v0.6.0.
+
+REQUIREMENTS:
+
+1. Update docs/index.md:
+   - Update feature count to 10 modules
+   - Update test count to 450
+   - Add all new modules to the features list
+   - Update the integration map
+
+2. Update docs/integrations.md:
+   - Already has LangChain, CrewAI, AutoGen, OpenAI Agents
+   - Make sure all 5 framework integrations are documented
+
+3. Create docs/workflows.md:
+   - Overview of Agent Chaining/Workflows
+   - WorkflowEngine usage
+   - WorkflowBuilder fluent API
+   - Input mapping between steps
+   - Human approval gates
+   - Failure strategies (stop, skip, retry, fallback)
+   - Cost limits
+   - Pre-built templates
+   - Code examples
+
+4. Create docs/consensus.md:
+   - Overview of Debate/Consensus system
+   - DebateEngine usage
+   - DebateParticipant roles (debater, critic, synthesizer, judge)
+   - 4 consensus strategies (Synthesis, Voting, Judge, Unanimous)
+   - Cost limit enforcement
+   - Pre-built templates
+   - Code examples
+
+5. Create docs/acl.md:
+   - Overview of Agent Communication Language
+   - 12 Performatives (REQUEST, INFORM, PROPOSE, etc.)
+   - ACLMessage model
+   - 3 FIPA protocols (Request, Contract Net, Query)
+   - ACLRouter for message routing
+   - MessageBuilder helpers
+   - Conversation management
+   - Code examples
+
+6. Create docs/personas.md:
+   - Overview of Custom Personas
+   - PersonaConfig model
+   - 12 capability types
+   - PersonaStore (save, get, list, export/import)
+   - PersonaRuntime for execution
+   - PersonaBuilder fluent API
+   - 6 pre-built templates
+   - Governance integration
+   - Code examples
+
+7. Create docs/capabilities.md:
+   - Overview of Agent Capability Labels
+   - CapabilityLevel and PerformanceMetric enums
+   - AgentProfile model
+   - CapabilityRegistry
+   - TaskMatcher for finding best agents
+   - 6 default profiles (GPT-4, Claude, Gemini, Llama)
+   - Code examples
+
+8. Create docs/routing.md:
+   - Overview of Role/Sector Routing
+   - 11 Sectors and 24 Roles
+   - RouteConfig model
+   - SectorRouter usage
+   - RuleEngine for flexible matching
+   - 5 default sector routes
+   - Governance policy per route
+   - Code examples
+
+9. Create docs/prompts.md:
+   - Overview of Agent-Selectable Prompts
+   - PromptType and PromptQuality enums
+   - PromptCandidate model with scoring
+   - PromptGenerator for multi-agent generation
+   - PromptSelector for choosing best prompt
+   - PromptOrchestrator for end-to-end workflows
+   - Meta-prompt templates
+   - Code examples
+
+10. Update mkdocs.yml nav:
+```yaml
+    nav:
+      - Home: index.md
+      - Getting Started: getting-started.md
+      - Framework Integrations: integrations.md
+      - Workflows: workflows.md
+      - Consensus: consensus.md
+      - ACL: acl.md
+      - Personas: personas.md
+      - Capabilities: capabilities.md
+      - Routing: routing.md
+      - Prompts: prompts.md
+      - API Reference: api.md
+```
+
+After creating all files, run: mkdocs build
