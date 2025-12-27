@@ -11,6 +11,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **Workflows**: Agent chaining and workflow orchestration with governance
 - **Consensus**: Multi-agent debate and consensus building system
 - **ACL**: Agent Communication Language message schema with FIPA protocols
+- **Personas**: Custom agents/personas with governance-enforced execution
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -84,6 +85,16 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Broadcast support for multi-agent communication
 - Compliance receipts for all messages
 
+### Custom Agents/Personas System
+- PersonaCapability enum with 12 capability types (research, analysis, coding, legal, etc.)
+- PersonaConfig model with system prompt, capabilities, governance settings
+- PersonaInstance for tracking running persona sessions with cost/token tracking
+- PersonaStore for saving, loading, filtering, and import/export of personas
+- PersonaRuntime for executing personas with governance enforcement
+- PersonaBuilder fluent API for building persona configurations
+- Pre-built templates: legal_analyst, code_reviewer, research_assistant, content_writer, data_analyst, financial_advisor
+- Blocked/allowed actions enforcement and max cost per request limits
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -108,6 +119,7 @@ tork-governance/
 │   ├── workflows/      # Agent chaining and workflow orchestration
 │   ├── consensus/      # Multi-agent debate and consensus building
 │   ├── acl/            # Agent Communication Language message schema
+│   ├── personas/       # Custom agents/personas system
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
@@ -175,11 +187,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **27** Workflow tests (models, engine, builder, templates, pause/resume, async)
 - **26** Consensus tests (debate models, engine, strategies, templates, cost limits)
 - **33** ACL tests (performatives, messages, protocols, router, builder, governance)
+- **34** Personas tests (models, store, runtime, builder, templates, governance)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-27: Custom Agents/Personas system with store, runtime, builder, and templates
 - 2025-12-26: ACL message schema system with FIPA protocols, router, and governance
 - 2025-12-26: Debate/Consensus system with DebateEngine, strategies, and templates
 - 2025-12-26: Agent Chaining/Workflow system with WorkflowEngine, WorkflowBuilder, and templates

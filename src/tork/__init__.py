@@ -32,6 +32,14 @@ from tork.acl import (
     ACLRouter,
     MessageBuilder,
 )
+from tork.personas import (
+    PersonaCapability,
+    PersonaConfig,
+    PersonaInstance,
+    PersonaStore,
+    PersonaRuntime,
+    PersonaBuilder,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -52,5 +60,11 @@ __all__ = [
     "Conversation",
     "ACLRouter",
     "MessageBuilder",
+    "PersonaCapability",
+    "PersonaConfig",
+    "PersonaInstance",
+    "PersonaStore",
+    "PersonaRuntime",
+    "PersonaBuilder",
     "__version__",
 ]
