@@ -55,6 +55,15 @@ from tork.routing import (
     RouteConfig,
     SectorRouter,
 )
+from tork.prompts import (
+    PromptType,
+    PromptQuality,
+    PromptCandidate,
+    PromptSelectionCriteria,
+    PromptGenerator,
+    PromptSelector,
+    PromptOrchestrator,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -92,5 +101,12 @@ __all__ = [
     "RoutingContext",
     "RouteConfig",
     "SectorRouter",
+    "PromptType",
+    "PromptQuality",
+    "PromptCandidate",
+    "PromptSelectionCriteria",
+    "PromptGenerator",
+    "PromptSelector",
+    "PromptOrchestrator",
     "__version__",
 ]

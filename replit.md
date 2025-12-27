@@ -14,6 +14,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **Personas**: Custom agents/personas with governance-enforced execution
 - **Capabilities**: Agent capability labels with proficiency levels and task matching
 - **Routing**: Role/sector-based request routing with governance
+- **Prompts**: Agent-selectable prompts with multi-agent generation and selection
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -115,6 +116,16 @@ This project provides a comprehensive governance framework for AI agent systems:
 - SectorRouter for routing requests with governance integration and fallback support
 - Pre-built routes for education, healthcare, finance, legal, and technology sectors
 
+### Agent-Selectable Prompts System
+- PromptType enum with 8 prompt types (system, user, critique, synthesis, refinement, etc.)
+- PromptQuality enum with 5 quality levels (excellent, good, acceptable, poor, rejected)
+- PromptCandidate model with clarity/specificity/safety scores and quality assessment
+- PromptSelectionCriteria model with thresholds, weights, and generator preferences
+- PromptGenerator for generating prompts with registered agent executors
+- PromptSelector for selecting best prompts based on weighted criteria
+- PromptOrchestrator for multi-agent generation, selection, refinement, and iteration
+- Meta-prompt templates: critique, synthesis, refinement, expansion, compression
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -142,6 +153,7 @@ tork-governance/
 │   ├── personas/       # Custom agents/personas system
 │   ├── capabilities/   # Agent capability labels and task matching
 │   ├── routing/        # Role/sector-based request routing
+│   ├── prompts/        # Agent-selectable prompts system
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
@@ -212,11 +224,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **34** Personas tests (models, store, runtime, builder, templates, governance)
 - **26** Capabilities tests (models, registry, defaults, matcher, ranking)
 - **28** Routing tests (models, rules, router, defaults, governance integration)
+- **31** Prompts tests (models, generator, selector, orchestrator, templates, governance)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-27: Agent-Selectable Prompts system with generator, selector, orchestrator, and templates
 - 2025-12-27: Role/Sector Routing system with SectorRouter, rules engine, and sector defaults
 - 2025-12-27: Agent Capability Labels system with registry, matcher, and default profiles
 - 2025-12-27: Custom Agents/Personas system with store, runtime, builder, and templates

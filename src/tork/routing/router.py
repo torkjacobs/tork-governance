@@ -1,6 +1,5 @@
 """Sector-based routing with governance integration."""
 
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import structlog
