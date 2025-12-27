@@ -1,0 +1,162 @@
+Create an ACL (Agent Communication Language) message schema system for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/acl/__init__.py with exports
+
+2. Create src/tork/acl/models.py:
+   
+   class Performative(str, Enum):
+       """Standard ACL performatives (speech acts)."""
+       REQUEST = "request"          # Ask agent to perform action
+       INFORM = "inform"            # Share information
+       PROPOSE = "propose"          # Make a proposal
+       ACCEPT = "accept"            # Accept a proposal
+       REJECT = "reject"            # Reject a proposal
+       QUERY = "query"              # Ask for information
+       CONFIRM = "confirm"          # Confirm receipt/action
+       CANCEL = "cancel"            # Cancel previous request
+       FAILURE = "failure"          # Report failure
+       AGREE = "agree"              # Agree to perform action
+       REFUSE = "refuse"            # Refuse to perform action
+       CALL_FOR_PROPOSAL = "cfp"    # Request proposals from agents
+   
+   class ACLMessage(BaseModel):
+       """Standard Agent Communication Language message."""
+       id: str = Field(default_factory=lambda: str(uuid4()))
+       performative: Performative
+       sender: str                  # Agent ID
+       receiver: str                # Agent ID or "all" for broadcast
+       content: Any                 # Message payload
+       reply_to: Optional[str] = None  # ID of message being replied to
+       conversation_id: Optional[str] = None  # Thread ID
+       protocol: str = "fipa-request"  # Protocol being used
+       language: str = "json"       # Content language
+       ontology: Optional[str] = None  # Domain ontology
+       timestamp: datetime = Field(default_factory=datetime.utcnow)
+       expires: Optional[datetime] = None
+       metadata: Dict[str, Any] = {}
+   
+   class Conversation(BaseModel):
+       """A conversation thread between agents."""
+       id: str
+       protocol: str
+       participants: List[str]
+       messages: List[ACLMessage] = []
+       status: str = "active"  # "active", "completed", "failed", "cancelled"
+       started_at: datetime = Field(default_factory=datetime.utcnow)
+       ended_at: Optional[datetime] = None
+
+3. Create src/tork/acl/protocols.py:
+   
+   class Protocol(ABC):
+       """Base class for interaction protocols."""
+       
+       name: str
+       
+       @abstractmethod
+       def valid_transitions(self, current_performative: Performative) -> List[Performative]:
+           """Return valid next performatives."""
+       
+       @abstractmethod
+       def is_terminal(self, performative: Performative) -> bool:
+           """Check if performative ends the protocol."""
+   
+   class FIPARequestProtocol(Protocol):
+       """Standard FIPA Request protocol."""
+       name = "fipa-request"
+       # request -> agree/refuse -> inform/failure
+   
+   class FIPAContractNetProtocol(Protocol):
+       """FIPA Contract Net protocol for task allocation."""
+       name = "fipa-contract-net"
+       # cfp -> propose/refuse -> accept/reject -> inform/failure
+   
+   class FIPAQueryProtocol(Protocol):
+       """FIPA Query protocol for information retrieval."""
+       name = "fipa-query"
+       # query -> inform/failure
+
+4. Create src/tork/acl/router.py:
+   
+   class ACLRouter:
+       """Route ACL messages between agents with governance."""
+       
+       def __init__(self, governance_engine: GovernanceEngine = None):
+           - Initialize with governance engine
+           - Store registered agents
+           - Store conversations
+       
+       def register_agent(self, agent_id: str, handler: Callable[[ACLMessage], ACLMessage]):
+           """Register an agent message handler."""
+       
+       def send(self, message: ACLMessage) -> ACLMessage:
+           """Send a message with governance checks."""
+           - Validate message against protocol
+           - Apply governance to content
+           - Route to receiver
+           - Generate compliance receipt
+           - Return response
+       
+       def broadcast(self, message: ACLMessage) -> List[ACLMessage]:
+           """Broadcast message to all agents."""
+       
+       def get_conversation(self, conversation_id: str) -> Conversation:
+           """Get a conversation by ID."""
+       
+       def start_conversation(self, protocol: str, participants: List[str]) -> Conversation:
+           """Start a new conversation."""
+       
+       def _validate_protocol(self, message: ACLMessage, conversation: Conversation) -> bool:
+           """Validate message follows protocol rules."""
+
+5. Create src/tork/acl/builder.py:
+   
+   class MessageBuilder:
+       """Fluent builder for ACL messages."""
+       
+       @staticmethod
+       def request(sender: str, receiver: str, content: Any) -> ACLMessage:
+           """Create a REQUEST message."""
+       
+       @staticmethod
+       def inform(sender: str, receiver: str, content: Any, reply_to: str = None) -> ACLMessage:
+           """Create an INFORM message."""
+       
+       @staticmethod
+       def propose(sender: str, receiver: str, content: Any, reply_to: str = None) -> ACLMessage:
+           """Create a PROPOSE message."""
+       
+       @staticmethod
+       def accept(sender: str, receiver: str, proposal_id: str) -> ACLMessage:
+           """Create an ACCEPT message."""
+       
+       @staticmethod
+       def reject(sender: str, receiver: str, proposal_id: str, reason: str = None) -> ACLMessage:
+           """Create a REJECT message."""
+       
+       # ... other performatives
+
+6. Create tests/test_acl.py with 20+ tests:
+   - Test Performative enum values
+   - Test ACLMessage creation
+   - Test ACLMessage with all fields
+   - Test Conversation model
+   - Test FIPARequestProtocol transitions
+   - Test FIPAContractNetProtocol transitions
+   - Test FIPAQueryProtocol transitions
+   - Test ACLRouter initialization
+   - Test register_agent
+   - Test send message
+   - Test broadcast message
+   - Test conversation management
+   - Test protocol validation
+   - Test governance applied to messages
+   - Test compliance receipts
+   - Test MessageBuilder helpers
+   - Test reply_to threading
+   - Test message expiration
+
+7. Update src/tork/__init__.py to export ACL classes
+
+Run: python -m pytest tests/test_acl.py -v

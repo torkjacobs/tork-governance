@@ -8,7 +8,7 @@ import structlog
 from tork.core.engine import GovernanceEngine
 from tork.core.models import EvaluationRequest, PolicyDecision
 from tork.compliance.receipts import ReceiptGenerator
-from tork.acl.models import ACLMessage, Conversation, Performative
+from tork.acl.models import ACLMessage, Conversation
 from tork.acl.protocols import (
     Protocol,
     FIPARequestProtocol,

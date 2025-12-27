@@ -1,0 +1,185 @@
+Create a Custom Agents/Personas system for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/personas/__init__.py with exports
+
+2. Create src/tork/personas/models.py:
+   
+   class PersonaCapability(str, Enum):
+       """Capabilities a persona can have."""
+       RESEARCH = "research"
+       ANALYSIS = "analysis"
+       WRITING = "writing"
+       CODING = "coding"
+       CRITIQUE = "critique"
+       SUMMARIZATION = "summarization"
+       TRANSLATION = "translation"
+       DATA_PROCESSING = "data_processing"
+       CREATIVE = "creative"
+       LEGAL = "legal"
+       FINANCIAL = "financial"
+       MEDICAL = "medical"
+   
+   class PersonaConfig(BaseModel):
+       """Configuration for a custom persona."""
+       id: str
+       name: str
+       description: str = ""
+       system_prompt: str  # The core prompt that defines behavior
+       capabilities: List[PersonaCapability] = []
+       preferred_models: List[str] = []  # ["gpt-4", "claude-3", etc.]
+       temperature: float = 0.7
+       max_tokens: int = 4096
+       
+       # Governance settings
+       governance_policy: Optional[str] = None  # Custom policy for this persona
+       pii_redaction: bool = True
+       allowed_actions: List[str] = []  # Actions persona can perform
+       blocked_actions: List[str] = []  # Actions persona cannot perform
+       max_cost_per_request: float = 1.0
+       
+       # Metadata
+       created_at: datetime = Field(default_factory=datetime.utcnow)
+       updated_at: datetime = Field(default_factory=datetime.utcnow)
+       created_by: str = ""
+       tags: List[str] = []
+       metadata: Dict[str, Any] = {}
+   
+   class PersonaInstance(BaseModel):
+       """A running instance of a persona."""
+       id: str
+       persona_id: str
+       session_id: str
+       state: Dict[str, Any] = {}  # Persona state/memory
+       messages_count: int = 0
+       total_tokens: int = 0
+       total_cost: float = 0.0
+       created_at: datetime = Field(default_factory=datetime.utcnow)
+
+3. Create src/tork/personas/store.py:
+   
+   class PersonaStore:
+       """Store and manage persona configurations."""
+       
+       def __init__(self, storage_path: str = None):
+           - Initialize storage (in-memory or file-based)
+       
+       def save(self, persona: PersonaConfig) -> str:
+           """Save a persona configuration."""
+       
+       def get(self, persona_id: str) -> PersonaConfig:
+           """Get a persona by ID."""
+       
+       def list(self, tags: List[str] = None, capabilities: List[PersonaCapability] = None) -> List[PersonaConfig]:
+           """List personas with optional filtering."""
+       
+       def delete(self, persona_id: str) -> bool:
+           """Delete a persona."""
+       
+       def update(self, persona_id: str, updates: Dict[str, Any]) -> PersonaConfig:
+           """Update a persona configuration."""
+       
+       def export(self, persona_id: str, format: str = "json") -> str:
+           """Export persona as JSON or YAML."""
+       
+       def import_persona(self, data: str, format: str = "json") -> PersonaConfig:
+           """Import persona from JSON or YAML."""
+
+4. Create src/tork/personas/runtime.py:
+   
+   class PersonaRuntime:
+       """Execute personas with governance."""
+       
+       def __init__(self, store: PersonaStore = None, governance_engine: GovernanceEngine = None):
+           - Initialize with persona store and governance
+           - Track active instances
+       
+       def instantiate(self, persona_id: str, session_id: str = None) -> PersonaInstance:
+           """Create a running instance of a persona."""
+       
+       def execute(self, instance_id: str, input_text: str, context: Dict = None) -> Dict:
+           """Execute a persona instance with input."""
+           - Get persona config
+           - Apply governance to input
+           - Build full prompt with system prompt + input
+           - Track tokens and cost
+           - Apply governance to output
+           - Update instance state
+           - Generate compliance receipt
+       
+       def get_instance(self, instance_id: str) -> PersonaInstance:
+           """Get an active instance."""
+       
+       def terminate(self, instance_id: str):
+           """Terminate a persona instance."""
+       
+       def list_instances(self, persona_id: str = None) -> List[PersonaInstance]:
+           """List active instances."""
+
+5. Create src/tork/personas/templates.py:
+   
+   Pre-built persona templates:
+   
+   def legal_analyst() -> PersonaConfig:
+       """Legal document analyst persona."""
+   
+   def code_reviewer() -> PersonaConfig:
+       """Code review and security audit persona."""
+   
+   def research_assistant() -> PersonaConfig:
+       """Research and summarization persona."""
+   
+   def content_writer() -> PersonaConfig:
+       """Content writing and editing persona."""
+   
+   def data_analyst() -> PersonaConfig:
+       """Data analysis and visualization persona."""
+   
+   def financial_advisor() -> PersonaConfig:
+       """Financial analysis persona (with appropriate disclaimers)."""
+
+6. Create src/tork/personas/builder.py:
+   
+   class PersonaBuilder:
+       """Fluent builder for creating personas."""
+       
+       def __init__(self, persona_id: str, name: str):
+           self._config = PersonaConfig(id=persona_id, name=name, system_prompt="")
+       
+       def with_system_prompt(self, prompt: str) -> "PersonaBuilder":
+       def with_capabilities(self, *caps: PersonaCapability) -> "PersonaBuilder":
+       def with_preferred_models(self, *models: str) -> "PersonaBuilder":
+       def with_temperature(self, temp: float) -> "PersonaBuilder":
+       def with_governance_policy(self, policy: str) -> "PersonaBuilder":
+       def with_pii_redaction(self, enabled: bool) -> "PersonaBuilder":
+       def with_allowed_actions(self, *actions: str) -> "PersonaBuilder":
+       def with_blocked_actions(self, *actions: str) -> "PersonaBuilder":
+       def with_max_cost(self, cost: float) -> "PersonaBuilder":
+       def with_tags(self, *tags: str) -> "PersonaBuilder":
+       def build(self) -> PersonaConfig:
+
+7. Create tests/test_personas.py with 25+ tests:
+   - Test PersonaCapability enum
+   - Test PersonaConfig model
+   - Test PersonaInstance model
+   - Test PersonaStore save/get/list/delete
+   - Test PersonaStore filtering by tags
+   - Test PersonaStore filtering by capabilities
+   - Test PersonaStore export/import JSON
+   - Test PersonaStore export/import YAML
+   - Test PersonaRuntime initialization
+   - Test instantiate persona
+   - Test execute with governance
+   - Test cost tracking per instance
+   - Test terminate instance
+   - Test PersonaBuilder fluent API
+   - Test all persona templates
+   - Test governance policy enforcement
+   - Test PII redaction in persona
+   - Test blocked actions enforcement
+   - Test max_cost_per_request limit
+
+8. Update src/tork/__init__.py to export persona classes
+
+Run: python -m pytest tests/test_personas.py -v
