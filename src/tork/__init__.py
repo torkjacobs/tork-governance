@@ -40,6 +40,14 @@ from tork.personas import (
     PersonaRuntime,
     PersonaBuilder,
 )
+from tork.capabilities import (
+    CapabilityLevel,
+    PerformanceMetric,
+    AgentCapability,
+    AgentProfile,
+    CapabilityRegistry,
+    TaskMatcher,
+)
 
 __all__ = [
     "GovernanceEngine",
@@ -66,5 +74,11 @@ __all__ = [
     "PersonaStore",
     "PersonaRuntime",
     "PersonaBuilder",
+    "CapabilityLevel",
+    "PerformanceMetric",
+    "AgentCapability",
+    "AgentProfile",
+    "CapabilityRegistry",
+    "TaskMatcher",
     "__version__",
 ]

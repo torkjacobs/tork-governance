@@ -1,0 +1,148 @@
+Create an Agent Capability Labels system for Tork Governance SDK.
+
+REQUIREMENTS:
+
+1. Create src/tork/capabilities/__init__.py with exports
+
+2. Create src/tork/capabilities/models.py:
+   
+   class CapabilityLevel(str, Enum):
+       """Proficiency level for a capability."""
+       BASIC = "basic"
+       INTERMEDIATE = "intermediate"
+       ADVANCED = "advanced"
+       EXPERT = "expert"
+   
+   class PerformanceMetric(str, Enum):
+       """Performance characteristics."""
+       SPEED = "speed"           # Fast response time
+       ACCURACY = "accuracy"     # High correctness
+       CREATIVITY = "creativity" # Novel outputs
+       SAFETY = "safety"         # Conservative, safe responses
+       COST = "cost"             # Token efficiency
+       CONTEXT = "context"       # Large context handling
+   
+   class AgentCapability(BaseModel):
+       """A single capability with proficiency level."""
+       name: str
+       level: CapabilityLevel = CapabilityLevel.INTERMEDIATE
+       score: float = 0.5  # 0.0 to 1.0
+       verified: bool = False  # Has this been tested/verified?
+       metadata: Dict[str, Any] = {}
+   
+   class AgentProfile(BaseModel):
+       """Complete capability profile for an agent."""
+       agent_id: str
+       name: str
+       provider: str = ""  # "openai", "anthropic", "google", etc.
+       model: str = ""     # "gpt-4", "claude-3", "gemini-pro", etc.
+       
+       # Capability scores
+       capabilities: List[AgentCapability] = []
+       performance: Dict[PerformanceMetric, float] = {}  # Metric -> score (0-1)
+       
+       # Strengths and weaknesses
+       strengths: List[str] = []    # ["coding", "analysis", "math"]
+       weaknesses: List[str] = []   # ["creative writing", "humor"]
+       
+       # Use case recommendations
+       best_for: List[str] = []     # ["code review", "data analysis"]
+       avoid_for: List[str] = []    # ["creative fiction", "poetry"]
+       
+       # Metadata
+       description: str = ""
+       tags: List[str] = []
+       created_at: datetime = Field(default_factory=datetime.utcnow)
+       updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+3. Create src/tork/capabilities/registry.py:
+   
+   class CapabilityRegistry:
+       """Registry of agent capability profiles."""
+       
+       def __init__(self):
+           self._profiles: Dict[str, AgentProfile] = {}
+       
+       def register(self, profile: AgentProfile) -> str:
+           """Register an agent profile."""
+       
+       def get(self, agent_id: str) -> AgentProfile:
+           """Get a profile by agent ID."""
+       
+       def list(self, 
+                provider: str = None,
+                capability: str = None,
+                min_score: float = None,
+                tags: List[str] = None) -> List[AgentProfile]:
+           """List profiles with filtering."""
+       
+       def find_best_for(self, task: str) -> List[AgentProfile]:
+           """Find agents best suited for a task."""
+       
+       def compare(self, agent_ids: List[str], capability: str = None) -> Dict:
+           """Compare capabilities across agents."""
+       
+       def update(self, agent_id: str, updates: Dict) -> AgentProfile:
+           """Update a profile."""
+       
+       def delete(self, agent_id: str) -> bool:
+           """Delete a profile."""
+
+4. Create src/tork/capabilities/defaults.py:
+   
+   Pre-defined profiles for popular models:
+   
+   def gpt4_profile() -> AgentProfile:
+       """GPT-4 capability profile."""
+   
+   def gpt4_turbo_profile() -> AgentProfile:
+       """GPT-4 Turbo capability profile."""
+   
+   def claude3_opus_profile() -> AgentProfile:
+       """Claude 3 Opus capability profile."""
+   
+   def claude3_sonnet_profile() -> AgentProfile:
+       """Claude 3 Sonnet capability profile."""
+   
+   def gemini_pro_profile() -> AgentProfile:
+       """Gemini Pro capability profile."""
+   
+   def llama3_profile() -> AgentProfile:
+       """Llama 3 capability profile."""
+
+5. Create src/tork/capabilities/matcher.py:
+   
+   class TaskMatcher:
+       """Match tasks to best-suited agents."""
+       
+       def __init__(self, registry: CapabilityRegistry):
+           self._registry = registry
+       
+       def match(self, task_description: str, required_capabilities: List[str] = None) -> List[AgentProfile]:
+           """Find agents matching task requirements."""
+       
+       def rank(self, profiles: List[AgentProfile], criteria: Dict[PerformanceMetric, float]) -> List[AgentProfile]:
+           """Rank agents by weighted criteria."""
+       
+       def recommend(self, task: str, top_n: int = 3) -> List[Tuple[AgentProfile, float]]:
+           """Recommend top N agents with confidence scores."""
+
+6. Create tests/test_capabilities.py with 18+ tests:
+   - Test CapabilityLevel enum
+   - Test PerformanceMetric enum
+   - Test AgentCapability model
+   - Test AgentProfile model
+   - Test CapabilityRegistry register/get
+   - Test CapabilityRegistry list with filters
+   - Test CapabilityRegistry find_best_for
+   - Test CapabilityRegistry compare
+   - Test default profiles (GPT-4, Claude, Gemini, Llama)
+   - Test TaskMatcher match
+   - Test TaskMatcher rank
+   - Test TaskMatcher recommend
+   - Test profile update
+   - Test profile delete
+
+7. Update src/tork/__init__.py to export capability classes
+
+Run: python -m pytest tests/test_capabilities.py -v

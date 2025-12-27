@@ -12,6 +12,7 @@ This project provides a comprehensive governance framework for AI agent systems:
 - **Consensus**: Multi-agent debate and consensus building system
 - **ACL**: Agent Communication Language message schema with FIPA protocols
 - **Personas**: Custom agents/personas with governance-enforced execution
+- **Capabilities**: Agent capability labels with proficiency levels and task matching
 - **Identity**: Agent identity management
 - **Compliance**: Policy validation and enforcement
 - **API**: REST endpoints via FastAPI
@@ -95,6 +96,15 @@ This project provides a comprehensive governance framework for AI agent systems:
 - Pre-built templates: legal_analyst, code_reviewer, research_assistant, content_writer, data_analyst, financial_advisor
 - Blocked/allowed actions enforcement and max cost per request limits
 
+### Agent Capability Labels System
+- CapabilityLevel enum with 4 proficiency levels (basic, intermediate, advanced, expert)
+- PerformanceMetric enum with 6 metrics (speed, accuracy, creativity, safety, cost, context)
+- AgentCapability model with name, level, score, and verified status
+- AgentProfile model with capabilities, performance metrics, strengths/weaknesses
+- CapabilityRegistry for managing agent profiles with filtering and comparison
+- TaskMatcher for matching tasks to best-suited agents with ranking and recommendations
+- Pre-built profiles: GPT-4, GPT-4 Turbo, Claude 3 Opus, Claude 3 Sonnet, Gemini Pro, Llama 3
+
 ### Policy Playground API & Web UI
 - Interactive web interface at root URL (/)
 - Three tabs: Evaluate, Redact, Scan
@@ -120,6 +130,7 @@ tork-governance/
 │   ├── consensus/      # Multi-agent debate and consensus building
 │   ├── acl/            # Agent Communication Language message schema
 │   ├── personas/       # Custom agents/personas system
+│   ├── capabilities/   # Agent capability labels and task matching
 │   ├── identity/       # Agent identity management
 │   ├── compliance/     # Policy validation
 │   ├── cli/            # Command-line tools
@@ -188,11 +199,13 @@ See `templates/policies/README.md` for policy format documentation and examples.
 - **26** Consensus tests (debate models, engine, strategies, templates, cost limits)
 - **33** ACL tests (performatives, messages, protocols, router, builder, governance)
 - **34** Personas tests (models, store, runtime, builder, templates, governance)
+- **26** Capabilities tests (models, registry, defaults, matcher, ranking)
 - **18** HTTP proxy adapter tests (config, request/response evaluation, proxy app routes)
 - **24** Playground API tests (service class, endpoints, UI serving)
 
 ## Recent Changes
 
+- 2025-12-27: Agent Capability Labels system with registry, matcher, and default profiles
 - 2025-12-27: Custom Agents/Personas system with store, runtime, builder, and templates
 - 2025-12-26: ACL message schema system with FIPA protocols, router, and governance
 - 2025-12-26: Debate/Consensus system with DebateEngine, strategies, and templates
