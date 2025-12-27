@@ -1,6 +1,5 @@
 """Execute personas with governance."""
 
-from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
@@ -10,7 +9,7 @@ from tork.core.engine import GovernanceEngine
 from tork.core.models import EvaluationRequest, PolicyDecision
 from tork.compliance.receipts import ReceiptGenerator
 from tork.personas.models import PersonaConfig, PersonaInstance
-from tork.personas.store import PersonaStore, PersonaNotFoundError
+from tork.personas.store import PersonaStore
 
 logger = structlog.get_logger(__name__)
 

@@ -1,6 +1,6 @@
 """Fluent builder for creating personas."""
 
-from typing import List, Optional, Any, Dict
+from typing import Any, Dict
 from datetime import datetime
 
 from tork.personas.models import PersonaCapability, PersonaConfig
