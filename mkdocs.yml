@@ -8,11 +8,28 @@ theme:
     primary: blue
   features:
     - navigation.tabs
+    - navigation.sections
     - content.code.copy
+    - content.code.annotate
 
 nav:
   - Home: index.md
-  - Quickstart: quickstart.md
-  - API Reference: api-reference.md
-  - Integrations: integrations.md
-  - Examples: examples.md
+  - Getting Started: getting-started.md
+  - Framework Integrations: integrations.md
+  - Workflows: workflows.md
+  - Consensus: consensus.md
+  - ACL: acl.md
+  - Personas: personas.md
+  - Capabilities: capabilities.md
+  - Routing: routing.md
+  - Prompts: prompts.md
+  - API Reference: api.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - admonition

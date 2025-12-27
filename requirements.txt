@@ -19,3 +19,5 @@ PyJWT
 httpx
 pytest-asyncio
 build
+mkdocs
+mkdocs-material
